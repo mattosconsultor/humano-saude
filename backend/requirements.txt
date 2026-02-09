@@ -17,6 +17,9 @@ openai==1.10.0
 # Database (opcional para futuro)
 sqlalchemy==2.0.25
 
+# Supabase Integration
+supabase==2.27.3
+
 # Environment Variables
 python-dotenv==1.0.0
 

@@ -12,7 +12,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
-from src.presentation.routers import cotacao_router, pdf_router
+from src.presentation.routers import cotacao_router, pdf_router, lead_router
 
 # Configuração da aplicação
 app = FastAPI(
@@ -40,6 +40,7 @@ app.add_middleware(
 # Registrar routers
 app.include_router(cotacao_router.router, prefix="/api/v1")
 app.include_router(pdf_router.router, prefix="/api/v1")
+app.include_router(lead_router.router)  # Já tem prefix="/api/v1/leads" no router
 
 
 # Rotas principais
