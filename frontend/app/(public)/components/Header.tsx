@@ -71,11 +71,11 @@ export default function Header() {
             className="relative cursor-pointer"
           >
             <Image
-              src="https://humanosaude.com.br/wp-content/uploads/2026/02/logo-humano-saude-dourado.png"
+              src="/images/logos/LOGO 1 SEM FUNDO.png"
               alt="Humano Saúde"
               width={180}
               height={60}
-              className="h-12 lg:h-16 w-auto brightness-0 invert"
+              className="h-12 lg:h-16 w-auto"
               priority
             />
           </button>

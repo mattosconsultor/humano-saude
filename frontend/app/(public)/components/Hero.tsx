@@ -90,36 +90,47 @@ export default function Hero() {
   };
 
   return (
-    <section className="bg-white min-h-screen lg:min-h-[90vh] flex pt-16 lg:pt-14 pb-16 overflow-hidden">
+    <section className="bg-white min-h-screen lg:min-h-[90vh] flex pt-32 lg:pt-28 pb-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 md:px-6 w-full grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
         
         {/* ✅ Coluna Esquerda: Conteúdo */}
         <div className="text-left max-w-[620px]">
-          <h2 className="text-[10px] lg:text-xs font-bold uppercase tracking-[4px] mb-4 italic bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">
+          <h2 className="text-[10px] lg:text-xs font-bold uppercase tracking-[4px] mb-6 italic bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">
             Especialistas em redução de custos
           </h2>
 
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 leading-tight font-cinzel">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 leading-[1.2] font-cinzel">
             <span className="block">Reduza até <span className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">50%</span></span>
             <span className="block">do custo em plano de saúde</span>
           </h1>
 
-          <p className="text-base sm:text-lg lg:text-xl text-gray-700 max-w-lg font-medium leading-relaxed mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-700 max-w-lg font-medium leading-[1.6] mb-8">
             Em 10 minutos, nossa <span className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent font-bold">Inteligência Artificial</span> analisa planos em diversas operadoras e apresenta opções mais eficientes, mantendo os hospitais e laboratórios que realmente importam.
           </p>
 
-          {/* ✅ Bullets */}
-          <ul className="space-y-5 max-w-lg text-gray-800">
+          {/* ✅ Bullets com ícones 3D */}
+          <ul className="space-y-4 max-w-lg text-gray-800">
             {[
-              { icon: '👥', text: 'Para planos individuais e familiares' },
-              { icon: '🏢', text: 'Para empresas e MEI (a partir de 2 vidas)' },
-              { icon: '🤖', text: 'Sistema integrado com Inteligência Artificial' },
-              { icon: '⏱️', text: 'Análise rápida em até 10 minutos' },
-              { icon: '📅', text: 'Sua redução aplicada em até 7 dias' },
+              { icon: '👥', text: 'Para planos individuais e familiares', gradient: 'from-blue-500 to-cyan-500' },
+              { icon: '🏢', text: 'Para empresas e MEI (a partir de 2 vidas)', gradient: 'from-purple-500 to-pink-500' },
+              { icon: '🤖', text: 'Sistema integrado com Inteligência Artificial', gradient: 'from-amber-500 to-orange-500' },
+              { icon: '⏱️', text: 'Análise rápida em até 10 minutos', gradient: 'from-green-500 to-emerald-500' },
+              { icon: '📅', text: 'Sua redução aplicada em até 7 dias', gradient: 'from-red-500 to-rose-500' },
             ].map((item, i) => (
-              <li key={i} className="flex items-start gap-4">
-                <span className="text-2xl flex-shrink-0">{item.icon}</span>
-                <p className="text-base font-medium">{item.text}</p>
+              <li key={i} className="flex items-center gap-4 group">
+                {/* Ícone 3D com glassmorphism */}
+                <div className="relative flex-shrink-0">
+                  {/* Sombra/glow do ícone */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300`} />
+                  
+                  {/* Container do ícone */}
+                  <div className={`relative w-14 h-14 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                    <span className="text-2xl filter drop-shadow-md">{item.icon}</span>
+                  </div>
+                </div>
+                
+                {/* Texto */}
+                <p className="text-base font-medium group-hover:text-[#bf953f] transition-colors duration-300">{item.text}</p>
               </li>
             ))}
           </ul>
