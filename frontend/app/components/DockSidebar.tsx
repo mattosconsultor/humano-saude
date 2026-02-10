@@ -191,9 +191,10 @@ const sidebarItems: SidebarItem[] = [
     color: "blue",
     children: [
       { id: "meta-visao", label: "Visão Geral", icon: LayoutDashboard, href: `${P}/meta-ads` },
+      { id: "meta-cockpit", label: "Cockpit Live", icon: Zap, href: `${P}/meta-ads/cockpit` },
+      { id: "meta-lancamento", label: "Lançar Campanha", icon: Target, href: `${P}/meta-ads/lancamento` },
       { id: "meta-campanhas", label: "Campanhas", icon: Target, href: `${P}/meta-ads/campanhas` },
       { id: "meta-criativos", label: "Criativos", icon: Palette, href: `${P}/meta-ads/criativos` },
-      { id: "meta-engajamento", label: "Engajamento", icon: Zap, href: `${P}/meta-ads/engajamento` },
       { id: "meta-historico", label: "Histórico", icon: Clock, href: `${P}/meta-ads/historico` },
       { id: "meta-demografico", label: "Demográfico", icon: PieChart, href: `${P}/meta-ads/demografico` },
     ],
