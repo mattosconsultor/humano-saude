@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: 'Humano Saúde | Reduza até 50% no Plano de Saúde',
+  title: 'Humano Saúde | Reduza até 40% no Plano de Saúde',
   description: 'Especialistas em redução de custos de planos de saúde Individual, Familiar e Empresarial. Análise com IA em 10 minutos.',
   keywords: [
     'plano de saúde barato',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: 'Humano Saúde | Economia Inteligente em Planos de Saúde',
-    description: 'Reduza até 50% mantendo sua rede hospitalar. Atendimento especializado.',
+    description: 'Reduza até 40% mantendo sua rede hospitalar. Atendimento especializado.',
     url: 'https://humanosaude.com.br',
     siteName: 'Humano Saúde',
     images: [
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Humano Saúde | Reduza até 50% no Plano de Saúde',
+    title: 'Humano Saúde | Reduza até 40% no Plano de Saúde',
     description: 'Análise com IA em 10 minutos. Sem burocracia.',
     images: ['/og-image.png'],
   },

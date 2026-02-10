@@ -7,7 +7,7 @@ export default function WhatsAppFloat() {
   const [messageIndex, setMessageIndex] = useState(0);
 
   const messages = [
-    '💬 Economize até 50%',
+    '💬 Economize até 40%',
     '⚡ Resposta em 10min',
     '🎯 Sem custo inicial',
     '✨ Análise gratuita',

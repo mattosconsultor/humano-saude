@@ -36,8 +36,8 @@ export default function AISimulator() {
             <h2 className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent font-bold text-xs tracking-[6px] mb-6 uppercase">
               Eficiência nos Benefícios
             </h2>
-            <h3 className="text-4xl font-black leading-[1.1] mb-8 italic font-cinzel">
-              O fim do<br />custo ineficiente
+            <h3 className="text-4xl font-black leading-[1.1] mb-8 italic font-cinzel uppercase">
+              O FIM DO<br />CUSTO INEFICIENTE
             </h3>
             <p className="text-lg text-gray-400 leading-relaxed font-light mb-10">
               Nossa IA analisa em tempo real o mercado para identificar a{' '}
@@ -48,7 +48,7 @@ export default function AISimulator() {
             </p>
             <a
               href="https://wa.me/5521988179407?text=Olá!%20Quero%20iniciar%20o%20Mapeamento%20Digital%20com%20IA."
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#bf953f] to-[#aa771c] px-8 py-4 rounded-xl text-xs uppercase tracking-widest font-black text-white hover:shadow-xl transition-all"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#bf953f] to-[#aa771c] px-12 py-5 rounded-xl text-sm uppercase tracking-widest font-black text-white hover:shadow-xl transition-all"
             >
               Iniciar Mapeamento Digital
             </a>
@@ -66,8 +66,8 @@ export default function AISimulator() {
                   <div className="absolute w-64 h-64 border-2 border-[#bf953f]/20 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
                 </div>
                 <img
-                  src="https://humanosaude.com.br/wp-content/uploads/2026/02/logo-humano-saude-dourado.png"
-                  alt="IA"
+                  src="/images/logos/LOGO 2 SEM FUNDO.png"
+                  alt="Humano Saúde IA"
                   className="w-20 h-auto relative z-10 opacity-90 brightness-200"
                 />
               </div>
