@@ -8,7 +8,7 @@ interface BigNumberProps {
   title: string;
   value: string | number;
   change?: number;
-  icon?: React.ElementType;
+  icon?: React.ComponentType<{ className?: string }>;
   loading?: boolean;
   prefix?: string;
   suffix?: string;
