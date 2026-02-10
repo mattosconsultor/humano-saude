@@ -36,7 +36,7 @@ export default function AISimulator() {
             <h2 className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent font-bold text-xs tracking-[6px] mb-6 uppercase">
               Eficiência nos Benefícios
             </h2>
-            <h3 className="text-4xl font-black leading-tight mb-8 italic font-cinzel">
+            <h3 className="text-4xl font-black leading-[1.1] mb-8 italic font-cinzel">
               O fim do<br />custo ineficiente
             </h3>
             <p className="text-lg text-gray-400 leading-relaxed font-light mb-10">

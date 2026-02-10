@@ -28,7 +28,7 @@ export default function CaseStudies() {
   return (
     <section id="pratica" className="py-32 bg-white text-slate-900 border-t border-gray-50 text-center">
       <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase tracking-tighter italic font-cinzel">
+        <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase tracking-tighter italic font-cinzel leading-[1.1]">
           Análise <span className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">Na Prática</span>
         </h2>
         <p className="text-gray-500 text-lg tracking-widest uppercase font-medium mb-24">

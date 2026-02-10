@@ -34,7 +34,7 @@ export default function Testimonials() {
           <div className="inline-block px-6 py-2 rounded-full border border-gray-300 text-xs tracking-widest text-gray-600 font-bold mb-6 uppercase">
             Relatos Reais
           </div>
-          <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent font-cinzel">
+          <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent font-cinzel leading-[1.1]">
             Quem Contratou, Aprova
           </h2>
         </div>

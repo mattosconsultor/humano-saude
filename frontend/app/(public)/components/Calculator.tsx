@@ -59,7 +59,7 @@ export default function Calculator() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-4xl mx-auto px-6">
-        <h2 className="text-4xl font-black text-center mb-12 font-cinzel">
+        <h2 className="text-4xl font-black text-center mb-12 font-cinzel leading-[1.1]">
           Calculadora <span className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">Inteligente</span>
         </h2>
         

@@ -84,15 +84,21 @@ export default function CalculatorWizard() {
       const data = await response.json();
 
       if (data.success) {
+        // Aumentar 25% em todos os valores calculados
+        const resultadosAjustados = data.resultados.map((plano: PlanoResultado) => ({
+          ...plano,
+          valorTotal: plano.valorTotal * 1.25
+        }));
+
         setState(prev => ({
           ...prev,
-          resultados: data.resultados,
+          resultados: resultadosAjustados,
           isLoading: false,
           step: 5,
         }));
 
         // Tracking
-        const valorMaisBarato = data.resultados[0]?.valorTotal;
+        const valorMaisBarato = resultadosAjustados[0]?.valorTotal;
         trackGTMCalculation({
           tipo: state.tipoContrato,
           acomodacao: state.acomodacao,
@@ -147,6 +153,16 @@ export default function CalculatorWizard() {
     <section id="calculadora" className="py-20 bg-gray-50">
       <div className="max-w-4xl mx-auto px-6">
         
+        {/* Título da Seção */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 font-cinzel leading-[1.1]">
+            Calcule seu <span className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">Plano de Saúde</span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Descubra as melhores opções e economize em seu plano de saúde
+          </p>
+        </div>
+        
         {/* Progress Bar */}
         <div className="mb-12">
           <div className="flex justify-between mb-4">
@@ -174,7 +190,7 @@ export default function CalculatorWizard() {
         {/* STEP 1: Tipo de Contratação */}
         {state.step === 1 && (
           <div className="bg-white p-10 rounded-3xl shadow-xl">
-            <h2 className="text-3xl font-bold mb-8 text-center font-cinzel">
+            <h2 className="text-3xl font-bold mb-8 text-center font-cinzel leading-[1.1]">
               Qual tipo de contratação?
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
@@ -188,7 +204,7 @@ export default function CalculatorWizard() {
                 }`}
               >
                 <div className="text-5xl mb-4">👤</div>
-                <h3 className="text-xl font-bold mb-2">Pessoa Física</h3>
+                <h3 className="text-xl font-bold mb-2 leading-[1.1]">Pessoa Física</h3>
                 <p className="text-gray-600 text-sm">Individual ou Familiar</p>
               </button>
 
@@ -202,7 +218,7 @@ export default function CalculatorWizard() {
                 }`}
               >
                 <div className="text-5xl mb-4">🏢</div>
-                <h3 className="text-xl font-bold mb-2">Empresarial (PME)</h3>
+                <h3 className="text-xl font-bold mb-2 leading-[1.1]">Empresarial (PME)</h3>
                 <p className="text-gray-600 text-sm">A partir de 2 vidas</p>
               </button>
             </div>
@@ -212,7 +228,7 @@ export default function CalculatorWizard() {
         {/* STEP 2: Acomodação + Beneficiários */}
         {state.step === 2 && (
           <div className="bg-white p-10 rounded-3xl shadow-xl">
-            <h2 className="text-3xl font-bold mb-8 text-center font-cinzel">
+            <h2 className="text-3xl font-bold mb-8 text-center font-cinzel leading-[1.1]">
               Acomodação e Beneficiários
             </h2>
 
@@ -417,6 +433,11 @@ export default function CalculatorWizard() {
               <h2 className="text-3xl font-bold mb-4 font-cinzel">
                 🎉 Encontramos {state.resultados.length} Planos!
               </h2>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+                <p className="text-sm text-yellow-800">
+                  <strong>⚠️ Valores Estimados:</strong> Os valores apresentados são estimativas baseadas nas informações fornecidas e estão sujeitos a alteração mediante análise detalhada.
+                </p>
+              </div>
               <p className="text-gray-600">
                 Aqui estão as melhores opções para você. Todos mantêm hospitais e laboratórios de qualidade.
               </p>
@@ -450,10 +471,11 @@ export default function CalculatorWizard() {
 
                 <div className="flex items-center justify-between p-6 bg-gradient-to-r from-[#bf953f]/10 to-[#aa771c]/10 rounded-2xl mb-6">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Valor Total Mensal</p>
+                    <p className="text-sm text-gray-600 mb-1">Valor Estimado Mensal</p>
                     <p className="text-4xl font-black text-slate-900">
                       R$ {plano.valorTotal.toFixed(2).replace('.', ',')}
                     </p>
+                    <p className="text-xs text-gray-500 mt-1">*Valores estimados - sujeitos a alteração</p>
                   </div>
                 </div>
 

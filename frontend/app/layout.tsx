@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Suspense } from "react";
+import Script from "next/script";
 import "./globals.css";
 import MetaPixel from "./components/MetaPixel";
 
@@ -61,6 +62,24 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <head>
+        {/* Google Tag Manager */}
+        <Script
+          id="gtag-base"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-22KJKFL28S');
+            `,
+          }}
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-22KJKFL28S"
+          strategy="afterInteractive"
+        />
+        
         <Suspense fallback={null}>
           <MetaPixel />
         </Suspense>
