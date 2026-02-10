@@ -78,8 +78,8 @@ export default function AISimulator() {
                   key={step.id}
                   className={`absolute ${step.position} px-4 py-2 rounded-lg transition-all duration-600 ${
                     step.isSuccess
-                      ? 'bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-white font-bold text-sm px-5 py-3'
-                      : 'bg-white/5 border border-[#bf953f]/20 text-gray-300 text-xs'
+                      ? 'bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-white font-bold text-sm px-5 py-3 shadow-[0_0_30px_rgba(191,149,63,0.6)]'
+                      : 'bg-black/80 backdrop-blur-sm border border-[#bf953f]/30 text-gray-300 text-xs'
                   } ${
                     activeStep >= i ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
                   }`}

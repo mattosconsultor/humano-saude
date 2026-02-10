@@ -40,7 +40,7 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
+    <section className="py-24 bg-black overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Título */}
@@ -48,13 +48,13 @@ export default function HowItWorks() {
           <div className="inline-block bg-gradient-to-r from-[#bf953f] to-[#aa771c] px-6 py-2 rounded-full mb-4">
             <span className="text-xs font-bold text-white uppercase tracking-[2px]">Como Funciona</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 uppercase font-cinzel leading-tight">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase font-cinzel leading-tight">
             Seu Atendimento<br />
             <span className="bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent">
               Rápido e Personalizado
             </span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Em apenas 3 passos simples, você recebe sua cotação personalizada em menos de <strong className="text-[#bf953f]">10 minutos</strong>
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function HowItWorks() {
           {steps.map((item, i) => (
             <div
               key={i}
-              className="group relative bg-white/80 backdrop-blur-xl p-10 rounded-3xl border-2 border-white shadow-2xl hover:shadow-[0_20px_60px_rgba(191,149,63,0.3)] transition-all duration-500 hover:-translate-y-3 overflow-hidden"
+              className="group relative bg-zinc-900/80 backdrop-blur-xl p-10 rounded-3xl border border-[#bf953f]/20 shadow-2xl hover:shadow-[0_20px_60px_rgba(191,149,63,0.3)] hover:border-[#bf953f]/50 transition-all duration-500 hover:-translate-y-3 overflow-hidden"
             >
               {/* Gradiente de fundo animado */}
               <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
@@ -87,15 +87,15 @@ export default function HowItWorks() {
               </div>
 
               {/* Título */}
-              <h3 className="text-2xl font-black text-slate-900 mb-4 uppercase font-cinzel group-hover:text-[#bf953f] transition-colors duration-300">
+              <h3 className="text-2xl font-black text-white mb-4 uppercase font-cinzel group-hover:text-[#bf953f] transition-colors duration-300">
                 {item.title}
               </h3>
 
               {/* Descrição */}
-              <p className="text-gray-600 leading-relaxed mb-6">{item.desc}</p>
+              <p className="text-gray-400 leading-relaxed mb-6">{item.desc}</p>
 
               {/* Progress Bar animada */}
-              <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="relative w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
                 <div
                   className="absolute inset-0 bg-gradient-to-r from-[#bf953f] via-[#ffd700] to-[#aa771c] rounded-full transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-1000"
                 />

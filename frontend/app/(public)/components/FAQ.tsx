@@ -7,34 +7,34 @@ export default function FAQ() {
 
   const faqs = [
     {
-      question: 'Como vocês conseguem redução para CPF também?',
+      question: 'Como funciona a Migração Técnica para empresas?',
       answer:
-        'Analisamos contratos familiares e individuais da mesma forma: identificamos coberturas desnecessárias, comparamos tabelas regionais e fazemos cotação técnica simultânea com todas as operadoras. A economia vem da escolha correta, não de truques.',
+        'Realizamos uma análise completa do contrato vigente da sua empresa: sinistralidade, perfil etário, rede credenciada utilizada e cláusulas contratuais. Com esses dados, negociamos diretamente com as operadoras para encontrar o plano que mantém a mesma cobertura com custo significativamente menor. É uma troca estratégica, não um downgrade.',
     },
     {
-      question: 'Preciso cumprir carência de novo?',
+      question: 'Meus colaboradores perdem carência ao trocar de operadora?',
       answer:
-        'Não. Portabilidade de carências é direito seu garantido pela ANS. Transferimos todas as coberturas sem recontagem de prazos, desde que respeitado o tempo mínimo de permanência no plano atual.',
+        'Não. A portabilidade de carências é garantida pela ANS (Resolução Normativa 438). Todos os colaboradores e dependentes mantêm suas carências cumpridas integralmente. Cuidamos de toda a documentação técnica para que a transição seja transparente e sem interrupção de atendimento.',
     },
     {
-      question: 'Qual o custo do serviço?',
+      question: 'Quanto minha empresa pode economizar de verdade?',
       answer:
-        'Zero custo inicial. Nossa remuneração vem da operadora escolhida, já embutida na mensalidade padrão. Você paga o mesmo valor que pagaria contratando direto, mas com nossa assessoria vitalícia inclusa.',
+        'A redução média que entregamos é de 25% a 40% sobre o valor atual do contrato. Depende do perfil da empresa, sinistralidade e operadora atual. Fazemos a cotação técnica sem compromisso — você só decide depois de ver os números reais lado a lado.',
     },
     {
-      question: 'Atendem só empresas ou pessoa física também?',
+      question: 'Qual o custo da consultoria da Humano Saúde?',
       answer:
-        'Atendemos todos os perfis: PF, PJ, MEI e PME. Nossa expertise é técnica: o que importa é o número de vidas e o histórico de sinistralidade, não o tipo de contratação.',
+        'Zero. Nossa remuneração vem da operadora escolhida, já embutida na mensalidade padrão de mercado. Sua empresa paga exatamente o mesmo valor que pagaria contratando direto, mas com nossa assessoria técnica e acompanhamento vitalício inclusos.',
     },
     {
-      question: 'Tem cobertura em todo Brasil?',
+      question: 'Atendem empresas de qualquer porte?',
       answer:
-        'Trabalhamos com as maiores operadoras nacionais e regionais. Cada estado tem particularidades de rede credenciada e preço. Fazemos a cotação específica para seu CEP.',
+        'Sim. De MEI com 2 vidas até grandes corporações com milhares de colaboradores. Nossa expertise é técnica: analisamos sinistralidade, faixa etária e utilização para encontrar a melhor negociação independente do tamanho da empresa.',
     },
     {
-      question: 'E se eu tiver dependentes?',
+      question: 'E se o reajuste anual vier alto novamente?',
       answer:
-        'Incluímos todos os dependentes na análise. Cônjuge, filhos e pais entram no cálculo de sinistralidade e faixa etária. A redução é calculada sobre o valor total da apólice familiar.',
+        'Diferente de uma corretora tradicional, acompanhamos seu contrato de forma contínua. Monitoramos a sinistralidade ao longo do ano e, se necessário, antecipamos negociações ou novas migrações antes do reajuste. Nosso compromisso é manter o custo sob controle permanentemente.',
     },
   ];
 
@@ -46,7 +46,7 @@ export default function FAQ() {
             Dúvidas Frequentes
           </div>
           <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-[#bf953f] to-[#aa771c] bg-clip-text text-transparent font-cinzel leading-[1.1]">
-            Respostas Diretas
+            Tire Suas Dúvidas<br />Antes de Decidir
           </h2>
         </div>
 
