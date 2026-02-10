@@ -3,5 +3,23 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "devCommand": "npm run dev",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/social-flow/cron?job=publish",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/social-flow/cron?job=analytics",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/social-flow/cron?job=tokens",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/social-flow/cron?job=sync",
+      "schedule": "0 3 * * *"
+    }
+  ]
 }

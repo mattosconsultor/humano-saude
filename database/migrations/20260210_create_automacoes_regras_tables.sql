@@ -45,6 +45,7 @@ CREATE INDEX IF NOT EXISTS idx_automacoes_ativa ON public.automacoes(ativa);
 -- RLS
 ALTER TABLE public.automacoes ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow all for automacoes" ON public.automacoes;
 CREATE POLICY "Allow all for automacoes" ON public.automacoes
   FOR ALL USING (true) WITH CHECK (true);
 
@@ -94,6 +95,7 @@ CREATE INDEX IF NOT EXISTS idx_regras_ia_categoria ON public.regras_ia(categoria
 -- RLS
 ALTER TABLE public.regras_ia ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow all for regras_ia" ON public.regras_ia;
 CREATE POLICY "Allow all for regras_ia" ON public.regras_ia
   FOR ALL USING (true) WITH CHECK (true);
 
