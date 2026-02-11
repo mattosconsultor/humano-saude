@@ -63,6 +63,9 @@ import {
   Phone,
   Plug,
   Filter,
+  UserPlus,
+  Loader2,
+  CheckCircle,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -217,6 +220,16 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
 
+  // ── CORRETORES (destaque) ──
+  {
+    id: "corretores",
+    label: "Corretores",
+    icon: Shield,
+    href: `${P}/corretores`,
+    color: "gold",
+    badge: { text: "NOVO", variant: "gold" as BadgeVariant },
+  },
+
   // ── GESTÃO & CLIENTES ──
   {
     id: "gestao",
@@ -324,6 +337,11 @@ export default function DockSidebar() {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [openMenus, setOpenMenus] = useState<Set<string>>(new Set())
+  const [showConvite, setShowConvite] = useState(false)
+  const [conviteEmail, setConviteEmail] = useState('')
+  const [conviteLoading, setConviteLoading] = useState(false)
+  const [conviteStatus, setConviteStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [conviteMsg, setConviteMsg] = useState('')
   const pathname = usePathname()
   const router = useRouter()
 
@@ -343,6 +361,34 @@ export default function DockSidebar() {
   const handleLogout = async () => {
     try { await fetch("/api/auth/logout", { method: "POST" }) } catch { /* redirect anyway */ }
     router.push("/admin-login")
+  }
+
+  const handleEnviarConvite = async () => {
+    if (!conviteEmail.trim()) return
+    setConviteLoading(true)
+    setConviteStatus('idle')
+    try {
+      const res = await fetch('/api/corretor/convite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: conviteEmail.trim(), nomeConvidante: 'Humano Saúde' }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setConviteStatus('success')
+        setConviteMsg('Convite enviado com sucesso!')
+        setConviteEmail('')
+        setTimeout(() => { setShowConvite(false); setConviteStatus('idle') }, 2500)
+      } else {
+        setConviteStatus('error')
+        setConviteMsg(data.error || 'Erro ao enviar convite')
+      }
+    } catch {
+      setConviteStatus('error')
+      setConviteMsg('Erro de conexão')
+    } finally {
+      setConviteLoading(false)
+    }
   }
 
   // Auto-abrir pai do item ativo
@@ -458,6 +504,18 @@ export default function DockSidebar() {
 
   const renderFooter = (expanded: boolean, onNav?: () => void) => (
     <div className="border-t border-white/10 p-2 space-y-1">
+      <button
+        onClick={() => { setShowConvite(true); onNav?.() }}
+        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#D4AF37]/10 transition-colors group relative"
+      >
+        <UserPlus className="h-5 w-5 text-[#D4AF37] flex-shrink-0" />
+        {expanded && <span className="text-sm text-[#D4AF37] font-semibold">Convidar Corretor</span>}
+        {!expanded && (
+          <div className="absolute left-full ml-2 px-3 py-2 bg-[#0a0a0a] border border-white/10 rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60]">
+            <p className="text-sm font-medium text-[#D4AF37]">Convidar Corretor</p>
+          </div>
+        )}
+      </button>
       <Link href="/ajuda" onClick={onNav}>
         <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors group relative">
           <HelpCircle className="h-5 w-5 text-white/50 flex-shrink-0" />
@@ -549,6 +607,89 @@ export default function DockSidebar() {
               </div>
               {renderFooter(true, () => setIsMobileOpen(false))}
             </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── MODAL CONVIDAR CORRETOR ── */}
+      <AnimatePresence>
+        {showConvite && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { setShowConvite(false); setConviteStatus('idle') }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] max-w-[90vw] bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 z-[71]"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center">
+                    <UserPlus className="h-5 w-5 text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white">Convidar Corretor</h3>
+                    <p className="text-xs text-white/40">Envie um convite para novos corretores</p>
+                  </div>
+                </div>
+                <button onClick={() => { setShowConvite(false); setConviteStatus('idle') }} className="h-8 w-8 rounded-lg hover:bg-white/5 flex items-center justify-center">
+                  <X className="h-4 w-4 text-white/40" />
+                </button>
+              </div>
+
+              {conviteStatus === 'success' ? (
+                <div className="text-center py-6">
+                  <CheckCircle className="h-12 w-12 text-green-400 mx-auto mb-3" />
+                  <p className="text-sm font-semibold text-green-400">{conviteMsg}</p>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <label className="text-xs text-white/50 mb-1.5 block font-medium">Email do futuro corretor</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                      <input
+                        type="email"
+                        value={conviteEmail}
+                        onChange={(e) => setConviteEmail(e.target.value)}
+                        placeholder="email@exemplo.com"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#D4AF37]/50"
+                        onKeyDown={(e) => e.key === 'Enter' && handleEnviarConvite()}
+                      />
+                    </div>
+                  </div>
+
+                  {conviteStatus === 'error' && (
+                    <p className="text-xs text-red-400 mb-3">{conviteMsg}</p>
+                  )}
+
+                  <button
+                    onClick={handleEnviarConvite}
+                    disabled={conviteLoading || !conviteEmail.trim()}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#D4AF37] text-black font-semibold text-sm hover:bg-[#F6E05E] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {conviteLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4" />
+                        Enviar Convite
+                      </>
+                    )}
+                  </button>
+
+                  <p className="text-[11px] text-white/30 text-center mt-3">
+                    O convidado receberá um email com o link da página Seja Corretor
+                  </p>
+                </>
+              )}
+            </motion.div>
           </>
         )}
       </AnimatePresence>

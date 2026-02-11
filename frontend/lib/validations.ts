@@ -24,6 +24,63 @@ const isValidName = (name: string): boolean => {
   return true;
 };
 
+/** Valida CPF brasileiro com dígitos verificadores */
+export function validarCPF(cpf: string): boolean {
+  const digits = cpf.replace(/\D/g, '');
+  if (digits.length !== 11) return false;
+  // Rejeitar sequências repetidas (000.000.000-00 etc)
+  if (/^(\d)\1{10}$/.test(digits)) return false;
+
+  // Primeiro dígito verificador
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += parseInt(digits[i]) * (10 - i);
+  let resto = (soma * 10) % 11;
+  if (resto === 10) resto = 0;
+  if (resto !== parseInt(digits[9])) return false;
+
+  // Segundo dígito verificador
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += parseInt(digits[i]) * (11 - i);
+  resto = (soma * 10) % 11;
+  if (resto === 10) resto = 0;
+  if (resto !== parseInt(digits[10])) return false;
+
+  return true;
+}
+
+/** Valida CNPJ brasileiro com dígitos verificadores */
+export function validarCNPJ(cnpj: string): boolean {
+  const digits = cnpj.replace(/\D/g, '');
+  if (digits.length !== 14) return false;
+  if (/^(\d)\1{13}$/.test(digits)) return false;
+
+  // Primeiro dígito verificador
+  const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+  let soma = 0;
+  for (let i = 0; i < 12; i++) soma += parseInt(digits[i]) * pesos1[i];
+  let resto = soma % 11;
+  const dig1 = resto < 2 ? 0 : 11 - resto;
+  if (dig1 !== parseInt(digits[12])) return false;
+
+  // Segundo dígito verificador
+  const pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+  soma = 0;
+  for (let i = 0; i < 13; i++) soma += parseInt(digits[i]) * pesos2[i];
+  resto = soma % 11;
+  const dig2 = resto < 2 ? 0 : 11 - resto;
+  if (dig2 !== parseInt(digits[13])) return false;
+
+  return true;
+}
+
+/** Valida CPF ou CNPJ automaticamente pelo tamanho */
+export function validarDocumento(doc: string): boolean {
+  const digits = doc.replace(/\D/g, '');
+  if (digits.length === 11) return validarCPF(doc);
+  if (digits.length === 14) return validarCNPJ(doc);
+  return false;
+}
+
 // ============================================
 // SCHEMAS – LANDING PAGE HERO LEAD
 // ============================================

@@ -29,9 +29,9 @@ export function middleware(request: NextRequest) {
   }
 
   // ============================================
-  // PROTEÇÃO: API routes internas (exceto leads e calculadora públicos)
+  // PROTEÇÃO: API routes internas (exceto leads, calculadora, auth, e corretor APIs)
   // ============================================
-  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/leads') && !pathname.startsWith('/api/calculadora') && !pathname.startsWith('/api/webhooks') && !pathname.startsWith('/api/health') && !pathname.startsWith('/api/auth')) {
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/leads') && !pathname.startsWith('/api/calculadora') && !pathname.startsWith('/api/webhooks') && !pathname.startsWith('/api/health') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/corretor')) {
     const token = request.cookies.get('admin_token')?.value ||
                   request.headers.get('authorization')?.replace('Bearer ', '');
 
@@ -44,9 +44,44 @@ export function middleware(request: NextRequest) {
   }
 
   // ============================================
-  // BLOQUEIO: Rotas legadas
+  // PROTEÇÃO: API do Corretor (requer corretor_token OU admin_token)
   // ============================================
-  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
+  if (pathname.startsWith('/api/corretor')) {
+    const token = request.cookies.get('corretor_token')?.value ||
+                  request.cookies.get('admin_token')?.value ||
+                  request.headers.get('authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Não autorizado' },
+        { status: 401 }
+      );
+    }
+  }
+
+  // ============================================
+  // PROTEÇÃO: Dashboard do Corretor (Multi-Tenant)
+  // ============================================
+  if (pathname.startsWith('/dashboard/corretor') && pathname !== '/dashboard/corretor/login' && pathname !== '/dashboard/corretor/cadastro' && !pathname.startsWith('/dashboard/corretor/onboarding')) {
+    const token = request.cookies.get('corretor_token')?.value ||
+                  request.cookies.get('admin_token')?.value ||
+                  request.headers.get('authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+      const loginUrl = new URL('/dashboard/corretor/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const response = NextResponse.next();
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('X-Frame-Options', 'DENY');
+    return response;
+  }
+
+  // ============================================
+  // BLOQUEIO: Rotas legadas (exceto /dashboard/corretor)
+  // ============================================
+  if ((pathname === '/dashboard' || pathname.startsWith('/dashboard/')) && !pathname.startsWith('/dashboard/corretor')) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
