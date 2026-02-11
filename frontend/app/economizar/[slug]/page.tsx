@@ -15,16 +15,21 @@ interface PageProps {
 // Metadata dinâmica para SEO/OG
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = createServiceClient();
+  let nome = 'Humano Saúde';
 
-  const { data } = await supabase
-    .from('corretores')
-    .select('nome')
-    .eq('slug', slug)
-    .eq('ativo', true)
-    .single();
+  try {
+    const supabase = createServiceClient();
+    const { data } = await supabase
+      .from('corretores')
+      .select('nome')
+      .eq('slug', slug)
+      .eq('ativo', true)
+      .single();
 
-  const nome = data?.nome || 'Humano Saúde';
+    if (data?.nome) nome = data.nome;
+  } catch {
+    // Fallback para nome padrão
+  }
 
   return {
     title: `Calculadora de Economia | ${nome} — Humano Saúde`,
@@ -44,26 +49,54 @@ export default async function EconomizarPage({ params }: PageProps) {
 
   // Validar slug no Supabase
   const supabase = createServiceClient();
-  const { data: corretor, error } = await supabase
-    .from('corretores')
-    .select('id, nome, slug, foto_url, logo_personalizada_url, cor_primaria, whatsapp, telefone, email')
-    .eq('slug', slug)
-    .eq('ativo', true)
-    .single();
 
-  if (error || !corretor) {
+  let corretor;
+  try {
+    const { data, error } = await supabase
+      .from('corretores')
+      .select('id, nome, slug, foto_url, logo_personalizada_url, cor_primaria, whatsapp, telefone, email')
+      .eq('slug', slug)
+      .eq('ativo', true)
+      .single();
+
+    if (error || !data) {
+      console.error('[economizar] Corretor não encontrado para slug:', slug, error?.message);
+      notFound();
+    }
+
+    corretor = data;
+  } catch (err) {
+    console.error('[economizar] Erro ao buscar corretor:', err);
     notFound();
   }
 
   // Salvar corretor_id no cookie (7 dias)
-  const cookieStore = await cookies();
-  cookieStore.set('corretor_indicacao_id', corretor.id, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 dias
-    path: '/',
-  });
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set('corretor_indicacao_id', corretor.id, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+  } catch (err) {
+    console.error('[economizar] Erro ao setar cookie:', err);
+  }
 
-  return <CalculadoraClient corretor={corretor} />;
+  return (
+    <CalculadoraClient
+      corretor={{
+        id: corretor.id,
+        nome: corretor.nome,
+        slug: corretor.slug || slug,
+        foto_url: corretor.foto_url || null,
+        logo_personalizada_url: corretor.logo_personalizada_url || null,
+        cor_primaria: corretor.cor_primaria || '#D4AF37',
+        whatsapp: corretor.whatsapp || null,
+        telefone: corretor.telefone || null,
+        email: corretor.email || null,
+      }}
+    />
+  );
 }

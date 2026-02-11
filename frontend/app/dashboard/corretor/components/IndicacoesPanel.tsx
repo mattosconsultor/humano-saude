@@ -17,12 +17,12 @@ import {
   Target,
   Eye,
   ArrowUpRight,
-  Sparkles,
   Share2,
   QrCode,
   Rocket,
   CheckCheck,
-  AlertCircle,
+  Shield,
+  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -65,9 +65,7 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
   // Slug
   const [slug, setSlug] = useState(initialSlug || '');
   const [slugConfirmado, setSlugConfirmado] = useState(!!initialSlug);
-  const [slugInput, setSlugInput] = useState('');
-  const [slugSaving, setSlugSaving] = useState(false);
-  const [slugError, setSlugError] = useState('');
+  const [gerando, setGerando] = useState(false);
   const [copiado, setCopiado] = useState(false);
 
   // Filtros
@@ -117,53 +115,27 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
     return () => clearInterval(interval);
   }, [fetchData, slugConfirmado]);
 
-  // ── Normalizar slug em tempo real ──
-  const handleSlugInputChange = (value: string) => {
-    const normalized = value
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9-]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-/, '')
-      .substring(0, 60);
-    setSlugInput(normalized);
-    setSlugError('');
-  };
-
-  // ── Salvar slug ──
-  const salvarSlug = async () => {
-    const slugFinal = slugInput.replace(/-$/, '');
-    if (slugFinal.length < 3) {
-      setSlugError('Mínimo de 3 caracteres');
-      return;
-    }
-
-    setSlugSaving(true);
-    setSlugError('');
-
+  // ── Gerar link automático ──
+  const gerarLink = async () => {
+    setGerando(true);
     try {
       const res = await fetch('/api/corretor/perfil', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: slugFinal }),
+        body: JSON.stringify({ gerar_link: true }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
-        setSlugError(data.error || 'Erro ao salvar');
-        setSlugSaving(false);
+        toast.error(data.error || 'Erro ao gerar link');
         return;
       }
-
       setSlug(data.slug);
       setSlugConfirmado(true);
-      toast.success('🎉 Seu link de indicação foi criado!');
+      toast.success('Link gerado com sucesso!');
     } catch {
-      setSlugError('Erro de conexão. Tente novamente.');
+      toast.error('Erro de conexão. Tente novamente.');
     } finally {
-      setSlugSaving(false);
+      setGerando(false);
     }
   };
 
@@ -176,9 +148,7 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
 
   const compartilharWhatsApp = () => {
     const texto = encodeURIComponent(
-      `🏥 Descubra quanto você pode economizar no plano de saúde!\n\n` +
-      `Use a calculadora gratuita e veja a diferença:\n${linkIndicacao}\n\n` +
-      `É rápido, fácil e sem compromisso! ✅`
+      `Descubra quanto você pode economizar no plano de saúde!\n\nUse a calculadora gratuita e veja a diferença:\n${linkIndicacao}\n\nÉ rápido, fácil e sem compromisso!`
     );
     window.open(`https://wa.me/?text=${texto}`, '_blank');
   };
@@ -214,107 +184,75 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
           Minhas Indicações
         </h2>
         <p className="text-sm text-white/40 mt-1">
-          Leads gerados pelo seu link de economia
+          Indique a calculadora de economia e acompanhe os leads
         </p>
       </div>
 
       {/* ================================================== */}
-      {/* SEÇÃO 1: CRIAR OU EXIBIR LINK */}
+      {/* SEÇÃO 1: GERAR OU EXIBIR LINK */}
       {/* ================================================== */}
 
       {!slugConfirmado ? (
-        /* ── Estado: Slug não existe → Criar ── */
+        /* ── Estado: Sem link → Gerar ── */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/20 bg-gradient-to-br from-[#D4AF37]/5 to-transparent p-6 md:p-8"
         >
-          {/* Decoração */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
-          <div className="relative z-10 max-w-2xl">
-            <div className="flex items-center gap-2 mb-2">
-              <Rocket className="h-5 w-5 text-[#D4AF37]" />
-              <span className="text-xs font-semibold text-[#D4AF37] uppercase tracking-wider">
-                Configure seu link
-              </span>
+          <div className="relative z-10 max-w-xl mx-auto text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center mx-auto mb-5">
+              <Rocket className="h-8 w-8 text-[#D4AF37]" />
             </div>
 
-            <h3 className="text-lg md:text-xl font-bold text-white mb-2">
-              Crie seu link personalizado de indicação
+            <h3 className="text-lg md:text-xl font-bold text-white mb-3">
+              Gere seu link de indicação
             </h3>
-            <p className="text-sm text-white/50 mb-6 leading-relaxed">
-              Compartilhe com clientes e leads. Quando alguém acessar e simular a economia,
-              o lead aparece automaticamente aqui no seu painel.
+            <p className="text-sm text-white/50 mb-6 leading-relaxed max-w-md mx-auto">
+              Envie para amigos, familiares e clientes. Quem acessar poderá simular
+              a economia no plano de saúde, e o lead aparece aqui no seu painel.
             </p>
 
-            {/* Input de criação do slug */}
-            <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1">
-                  <div className="flex items-center rounded-xl bg-white/[0.06] border border-white/[0.12] overflow-hidden focus-within:border-[#D4AF37]/40 transition-colors">
-                    <span className="pl-4 pr-1 text-xs text-white/30 whitespace-nowrap shrink-0">
-                      humanosaude.com.br/economizar/
-                    </span>
-                    <input
-                      type="text"
-                      value={slugInput}
-                      onChange={(e) => handleSlugInputChange(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && salvarSlug()}
-                      placeholder="seu-nome"
-                      className="flex-1 px-2 py-3 bg-transparent text-sm text-white font-medium focus:outline-none placeholder:text-white/20 min-w-0"
-                    />
+            {/* Benefícios */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+              {[
+                { icon: Shield, text: 'Link seguro e rastreável' },
+                { icon: Zap, text: 'Leads em tempo real' },
+                { icon: Target, text: 'Acompanhe cada indicação' },
+              ].map((item, i) => {
+                const Icon = item.icon;
+                return (
+                  <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <Icon className="h-4 w-4 text-[#D4AF37] shrink-0" />
+                    <span className="text-[11px] text-white/50">{item.text}</span>
                   </div>
-                  {slugInput && (
-                    <p className="text-[11px] text-white/30 mt-1.5 ml-1">
-                      Preview: <span className="text-[#D4AF37]">humanosaude.com.br/economizar/{slugInput}</span>
-                    </p>
-                  )}
-                  {slugError && (
-                    <p className="text-[11px] text-red-400 mt-1.5 ml-1 flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" />
-                      {slugError}
-                    </p>
-                  )}
-                </div>
-                <button
-                  onClick={salvarSlug}
-                  disabled={slugSaving || slugInput.length < 3}
-                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#D4AF37] text-black text-sm font-bold hover:bg-[#F6E05E] transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-                >
-                  {slugSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-4 w-4" />
-                  )}
-                  Criar Link
-                </button>
-              </div>
-
-              {/* Dicas */}
-              <div className="flex flex-wrap gap-2 mt-2">
-                {['seu-nome', 'nome-sobrenome', 'corretor-cidade'].map((sugestao) => (
-                  <button
-                    key={sugestao}
-                    onClick={() => handleSlugInputChange(sugestao)}
-                    className="text-[11px] px-3 py-1 rounded-full border border-white/[0.08] text-white/30 hover:text-[#D4AF37] hover:border-[#D4AF37]/30 transition-colors"
-                  >
-                    ex: {sugestao}
-                  </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
+
+            <button
+              onClick={gerarLink}
+              disabled={gerando}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-[#D4AF37] text-black text-sm font-bold hover:bg-[#F6E05E] transition-all disabled:opacity-50"
+            >
+              {gerando ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Link2 className="h-4 w-4" />
+              )}
+              {gerando ? 'Gerando...' : 'Gerar meu link'}
+            </button>
           </div>
         </motion.div>
       ) : (
-        /* ── Estado: Slug existe → Exibir link + ações ── */
+        /* ── Estado: Link existe → Exibir + ações ── */
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="rounded-2xl border border-[#D4AF37]/20 bg-gradient-to-br from-[#D4AF37]/5 to-transparent p-5"
         >
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            {/* Link */}
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-semibold text-[#D4AF37] uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <Link2 className="h-3.5 w-3.5" />
@@ -325,7 +263,6 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
               </div>
             </div>
 
-            {/* Ações */}
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={copiarLink}
@@ -366,12 +303,12 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
             </div>
           </div>
 
-          {/* Como funciona - mini cards */}
+          {/* Como funciona */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-white/[0.06]">
             {[
-              { icon: Share2, title: 'Compartilhe', desc: 'Envie o link para clientes e leads' },
-              { icon: QrCode, title: 'Lead simula', desc: 'O lead calcula a economia do plano' },
-              { icon: Target, title: 'Receba aqui', desc: 'O lead aparece neste painel' },
+              { icon: Share2, title: 'Compartilhe', desc: 'Envie o link para quem precisa economizar' },
+              { icon: QrCode, title: 'Lead simula', desc: 'A pessoa calcula a economia no plano' },
+              { icon: Target, title: 'Receba aqui', desc: 'O lead aparece neste painel automaticamente' },
             ].map((step, i) => {
               const Icon = step.icon;
               return (
@@ -391,7 +328,7 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
       )}
 
       {/* ================================================== */}
-      {/* SEÇÃO 2: BIG NUMBERS (só se tem slug) */}
+      {/* SEÇÃO 2: BIG NUMBERS (só se tem link) */}
       {/* ================================================== */}
       {slugConfirmado && (
         <>
@@ -424,10 +361,6 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
               );
             })}
           </div>
-
-          {/* ================================================== */}
-          {/* SEÇÃO 3: FILTROS + TABELA */}
-          {/* ================================================== */}
 
           {/* Filtros */}
           <div className="flex flex-col sm:flex-row gap-3">
@@ -483,27 +416,13 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/[0.06]">
-                      <th className="text-left px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase">
-                        Lead
-                      </th>
-                      <th className="text-left px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden md:table-cell">
-                        Operadora
-                      </th>
-                      <th className="text-right px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase">
-                        Valor Atual
-                      </th>
-                      <th className="text-right px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden lg:table-cell">
-                        Economia Est.
-                      </th>
-                      <th className="text-center px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden md:table-cell">
-                        Vidas
-                      </th>
-                      <th className="text-center px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase">
-                        Status
-                      </th>
-                      <th className="text-right px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden lg:table-cell">
-                        Data
-                      </th>
+                      <th className="text-left px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase">Lead</th>
+                      <th className="text-left px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden md:table-cell">Operadora</th>
+                      <th className="text-right px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase">Valor Atual</th>
+                      <th className="text-right px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden lg:table-cell">Economia Est.</th>
+                      <th className="text-center px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden md:table-cell">Vidas</th>
+                      <th className="text-center px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase">Status</th>
+                      <th className="text-right px-4 py-3 text-[11px] font-semibold text-[#D4AF37] uppercase hidden lg:table-cell">Data</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -518,9 +437,7 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
                         >
                           <td className="px-4 py-3">
                             <div>
-                              <p className="text-sm text-white font-medium">
-                                {lead.nome || 'Lead anônimo'}
-                              </p>
+                              <p className="text-sm text-white font-medium">{lead.nome || 'Lead anônimo'}</p>
                               <div className="flex items-center gap-3 mt-0.5">
                                 {lead.telefone && (
                                   <a
@@ -541,26 +458,18 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-xs text-white/50 hidden md:table-cell">
-                            {lead.operadora_atual || '—'}
-                          </td>
+                          <td className="px-4 py-3 text-xs text-white/50 hidden md:table-cell">{lead.operadora_atual || '—'}</td>
                           <td className="px-4 py-3 text-right">
-                            <span className="text-sm text-white font-medium">
-                              {formatCurrency(lead.valor_atual)}
-                            </span>
+                            <span className="text-sm text-white font-medium">{formatCurrency(lead.valor_atual)}</span>
                           </td>
                           <td className="px-4 py-3 text-right hidden lg:table-cell">
                             {lead.economia_estimada ? (
-                              <span className="text-sm text-green-400 font-medium">
-                                {formatCurrency(lead.economia_estimada)}
-                              </span>
+                              <span className="text-sm text-green-400 font-medium">{formatCurrency(lead.economia_estimada)}</span>
                             ) : (
                               <span className="text-white/20">—</span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-center text-xs text-white/50 hidden md:table-cell">
-                            {lead.qtd_vidas}
-                          </td>
+                          <td className="px-4 py-3 text-center text-xs text-white/50 hidden md:table-cell">{lead.qtd_vidas}</td>
                           <td className="px-4 py-3">
                             <select
                               value={lead.status}
@@ -572,9 +481,7 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
                               )}
                             >
                               {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-                                <option key={key} value={key} className="bg-[#111]">
-                                  {cfg.label}
-                                </option>
+                                <option key={key} value={key} className="bg-[#111]">{cfg.label}</option>
                               ))}
                             </select>
                           </td>
@@ -595,7 +502,6 @@ export default function IndicacoesPanel({ corretorId, slug: initialSlug }: { cor
               </div>
             )}
 
-            {/* Paginação */}
             {total > 15 && (
               <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.06]">
                 <p className="text-xs text-white/30">

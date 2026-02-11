@@ -36,10 +36,10 @@ export interface CorretorPublico {
   slug: string;
   foto_url: string | null;
   logo_personalizada_url: string | null;
-  cor_primaria: string;
+  cor_primaria: string | null;
   whatsapp: string | null;
   telefone: string | null;
-  email: string;
+  email: string | null;
 }
 
 // =============================================

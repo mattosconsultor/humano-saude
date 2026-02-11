@@ -83,45 +83,58 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, senha_atual, nova_senha, slug } = body;
+    const { email, senha_atual, nova_senha, gerar_link } = body;
     const supabase = createServiceClient();
 
-    // ── Atualizar slug (link de indicação) ────
-    if (slug !== undefined) {
-      const slugNorm = slug
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9-]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .substring(0, 60);
-
-      if (slugNorm.length < 3) {
-        return NextResponse.json({ error: 'O slug deve ter pelo menos 3 caracteres' }, { status: 400 });
-      }
-
-      // Palavras reservadas
-      const reservados = ['admin', 'api', 'login', 'dashboard', 'teste', 'test', 'humano', 'saude', 'humanosaude'];
-      if (reservados.includes(slugNorm)) {
-        return NextResponse.json({ error: 'Este nome não está disponível' }, { status: 400 });
-      }
-
-      // Verificar se já existe outro corretor com esse slug
-      const { data: existente } = await supabase
+    // ── Gerar link de indicação (código aleatório) ────
+    if (gerar_link) {
+      // Verificar se o corretor JÁ tem um slug — se sim, bloquear (só admin pode alterar)
+      const { data: corretorAtual } = await supabase
         .from('corretores')
-        .select('id')
-        .eq('slug', slugNorm)
-        .neq('id', corretorId)
+        .select('slug')
+        .eq('id', corretorId)
         .single();
 
-      if (existente) {
-        return NextResponse.json({ error: 'Este link já está em uso. Tente outro nome.' }, { status: 409 });
+      if (corretorAtual?.slug) {
+        return NextResponse.json(
+          { error: 'Seu link já foi gerado. Entre em contato com a administração para alterá-lo.' },
+          { status: 403 }
+        );
+      }
+
+      // Gerar código curto aleatório (8 chars alfanumérico)
+      const gerarCodigo = () => {
+        const chars = 'abcdefghijkmnpqrstuvwxyz23456789'; // sem 0, o, l, 1 (evita confusão visual)
+        let codigo = '';
+        for (let i = 0; i < 8; i++) {
+          codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return codigo;
+      };
+
+      // Tentar até encontrar um código único (max 5 tentativas)
+      let slugGerado = '';
+      for (let tentativa = 0; tentativa < 5; tentativa++) {
+        const candidato = gerarCodigo();
+        const { data: existente } = await supabase
+          .from('corretores')
+          .select('id')
+          .eq('slug', candidato)
+          .single();
+
+        if (!existente) {
+          slugGerado = candidato;
+          break;
+        }
+      }
+
+      if (!slugGerado) {
+        return NextResponse.json({ error: 'Erro ao gerar link. Tente novamente.' }, { status: 500 });
       }
 
       const { error: updateErr } = await supabase
         .from('corretores')
-        .update({ slug: slugNorm })
+        .update({ slug: slugGerado })
         .eq('id', corretorId);
 
       if (updateErr) {
@@ -129,7 +142,7 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json({ error: 'Erro ao salvar link' }, { status: 500 });
       }
 
-      return NextResponse.json({ success: true, slug: slugNorm, message: 'Link criado com sucesso!' });
+      return NextResponse.json({ success: true, slug: slugGerado, message: 'Link gerado com sucesso!' });
     }
 
     // ── Atualizar e-mail ──────────────────────
