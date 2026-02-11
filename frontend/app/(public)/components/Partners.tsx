@@ -8,7 +8,7 @@ import Image from 'next/image';
 const logos = [
   { name: 'Amil', url: '/images/operadoras/amil-logo.png' },
   { name: 'Bradesco', url: '/images/operadoras/bradesco-logo.png' },
-  { name: 'SulAmérica', url: '/images/operadoras/sulamerica-logo (2).png' },
+  { name: 'SulAmérica', url: '/images/operadoras/sulamerica-logo.png' },
   { name: 'Unimed', url: '/images/operadoras/unimed-logo.png' },
   { name: 'Porto Saúde', url: '/images/operadoras/portosaude-logo.png' },
   { name: 'Assim Saúde', url: '/images/operadoras/assimsaude-logo.png' },

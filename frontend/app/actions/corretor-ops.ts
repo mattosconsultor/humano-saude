@@ -155,18 +155,34 @@ export async function getRenovacoes(
   try {
     const supabase = createServiceClient();
 
+    // Calcula datas-limite dinamicamente (coluna gerada não existe na tabela)
+    const now = new Date();
+    const minDate = new Date(now);
+    minDate.setDate(minDate.getDate() - 30); // Inclui vencidos há até 30 dias
+    const maxDate = new Date(now);
+    maxDate.setDate(maxDate.getDate() + diasLimite);
+
     const { data, error } = await supabase
       .from('renovacoes')
       .select('*')
       .eq('corretor_id', corretorId)
-      .lte('dias_para_vencimento', diasLimite)
-      .gte('dias_para_vencimento', -30) // Inclui vencidos há até 30 dias
+      .gte('data_vencimento', minDate.toISOString().split('T')[0])
+      .lte('data_vencimento', maxDate.toISOString().split('T')[0])
       .neq('status', 'renovado')
       .neq('status', 'cancelado')
       .order('data_vencimento', { ascending: true });
 
     if (error) throw error;
-    return { success: true, data: data ?? [] };
+
+    // Computa dias_para_vencimento dinamicamente
+    const enriched: Renovacao[] = (data ?? []).map((row) => {
+      const vencimento = new Date(row.data_vencimento);
+      const diffMs = vencimento.getTime() - now.getTime();
+      const dias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return { ...row, dias_para_vencimento: dias };
+    });
+
+    return { success: true, data: enriched };
   } catch (err) {
     console.error('[getRenovacoes]', err);
     return { success: false, error: 'Erro ao carregar renovações' };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -20,6 +20,7 @@ import {
   Receipt,
   RefreshCw,
   Palette,
+  Wand2,
   Award,
   User,
   UserPlus,
@@ -106,7 +107,8 @@ const menuItems: SidebarItem[] = [
     color: 'blue',
     children: [
       { id: 'mat-vendas', label: 'Material de Vendas', icon: FolderOpen, href: `${B}/materiais` },
-      { id: 'mat-banners', label: 'Gerar Banner', icon: Palette, href: `${B}/materiais/banners`, badge: { text: 'NOVO', variant: 'gold' } },
+      { id: 'mat-banners', label: 'CriativoPRO', icon: Palette, href: `${B}/materiais/banners`, badge: { text: 'PRO', variant: 'gold' } },
+      { id: 'mat-iaclone', label: 'IA Clone', icon: Wand2, href: `${B}/materiais/ia-clone`, badge: { text: 'NOVO', variant: 'gold' } },
       { id: 'mat-upload', label: 'Meus Uploads', icon: Upload, href: `${B}/materiais/uploads` },
     ],
   },
@@ -202,12 +204,18 @@ export default function CorretorSidebar() {
 
   const toggleMenu = (id: string) => {
     setOpenMenus((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const next = new Set<string>();
+      // Close all other menus, toggle only the clicked one
+      if (!prev.has(id)) next.add(id);
       return next;
     });
   };
+
+  // Reset manually opened menus when route changes — only keep the active parent open
+  useEffect(() => {
+    setOpenMenus(new Set());
+    setIsMobileOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -250,9 +258,14 @@ export default function CorretorSidebar() {
     }
   };
 
-  const effectiveOpen = new Set(openMenus);
+  const effectiveOpen = new Set<string>();
+  // Only auto-open the parent whose child matches the current path
   menuItems.forEach((item) => {
     if (item.children && isChildActive(item)) effectiveOpen.add(item.id);
+  });
+  // Add manually toggled menus (but NOT ones that are no longer active)
+  openMenus.forEach((id) => {
+    effectiveOpen.add(id);
   });
 
   // ============================================
@@ -328,7 +341,15 @@ export default function CorretorSidebar() {
                   <div className="ml-4 pl-3 border-l border-white/10 mt-1 space-y-0.5">
                     {item.children?.map((child) => {
                       const ChildIcon = child.icon;
-                      const childIsActive = isActive(child.href) || pathname.startsWith(child.href + '/');
+                      // Check exact match, or startsWith only if no other sibling is a more specific match
+                      const exactMatch = pathname === child.href;
+                      const prefixMatch = pathname.startsWith(child.href + '/');
+                      // Avoid prefix match if another sibling has a more specific match
+                      const siblingHasExactOrBetterMatch = item.children?.some(
+                        (sib) => sib.id !== child.id && (pathname === sib.href || pathname.startsWith(sib.href + '/'))
+                          && sib.href.length > child.href.length
+                      );
+                      const childIsActive = exactMatch || (prefixMatch && !siblingHasExactOrBetterMatch);
                       return (
                         <Link key={child.id} href={child.href} onClick={onNav}>
                           <div className={cn(

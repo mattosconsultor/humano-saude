@@ -9,7 +9,7 @@ import { useCorretorId } from '../hooks/useCorretorToken';
 
 const TABS = [
   { id: 'materiais', label: 'Materiais', icon: FolderOpen },
-  { id: 'banners', label: 'Gerador de Banners', icon: Palette },
+  { id: 'banners', label: 'CriativoPRO', icon: Palette },
 ] as const;
 
 type Tab = (typeof TABS)[number]['id'];

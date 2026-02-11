@@ -321,3 +321,286 @@ export async function recalculateScore(cardId: string): Promise<{
     return { success: false, error: 'Erro ao recalcular score' };
   }
 }
+
+// ========================================
+// CRM STATS (Big Numbers + Funil)
+// ========================================
+
+export type CrmStats = {
+  totalLeads: number;
+  porColuna: Record<KanbanColumnSlug, number>;
+  valorTotalPipeline: number;
+  valorFechado: number;
+  taxaConversao: number;
+  tempoMedioPorEtapa: Record<string, number>;
+  leadsHot: number;
+  leadsStale: number;
+  scoreDistribuicao: { faixa: string; count: number }[];
+  interacoesUltimos7d: number;
+  funil: { etapa: string; total: number; cor: string }[];
+};
+
+export async function getCrmStats(corretorId: string): Promise<{
+  success: boolean;
+  data?: CrmStats;
+  error?: string;
+}> {
+  try {
+    const supabase = createServiceClient();
+
+    const { data: cards, error } = await supabase
+      .from('crm_cards')
+      .select('*')
+      .eq('corretor_id', corretorId);
+
+    if (error) throw error;
+
+    const allCards = cards ?? [];
+    const now = Date.now();
+
+    const porColuna: Record<string, number> = {};
+    const columns: KanbanColumnSlug[] = ['novo_lead', 'qualificado', 'proposta_enviada', 'documentacao', 'fechado', 'perdido'];
+    columns.forEach((c) => { porColuna[c] = 0; });
+
+    let valorTotalPipeline = 0;
+    let valorFechado = 0;
+    let leadsHot = 0;
+    let leadsStale = 0;
+    const scoreRanges = { '0-25': 0, '26-50': 0, '51-75': 0, '76-100': 0 };
+
+    allCards.forEach((card) => {
+      porColuna[card.coluna_slug] = (porColuna[card.coluna_slug] ?? 0) + 1;
+      const val = Number(card.valor_estimado ?? 0);
+
+      if (card.coluna_slug !== 'perdido') valorTotalPipeline += val;
+      if (card.coluna_slug === 'fechado') valorFechado += val;
+
+      const hoursUpdate = (now - new Date(card.updated_at).getTime()) / 3600000;
+      const lastProposta = card.ultima_interacao_proposta
+        ? (now - new Date(card.ultima_interacao_proposta).getTime()) / 3600000
+        : Infinity;
+
+      if (lastProposta <= 24) leadsHot++;
+      if (hoursUpdate > 48 && card.coluna_slug !== 'fechado' && card.coluna_slug !== 'perdido') leadsStale++;
+
+      const s = card.score ?? 0;
+      if (s <= 25) scoreRanges['0-25']++;
+      else if (s <= 50) scoreRanges['26-50']++;
+      else if (s <= 75) scoreRanges['51-75']++;
+      else scoreRanges['76-100']++;
+    });
+
+    const totalAtivos = allCards.filter((c) => c.coluna_slug !== 'perdido').length;
+    const fechados = porColuna['fechado'] ?? 0;
+    const taxaConversao = totalAtivos > 0 ? Math.round((fechados / totalAtivos) * 100) : 0;
+
+    // Interações últimos 7 dias
+    const seteDiasAtras = new Date(now - 7 * 24 * 3600000).toISOString();
+    const { count: interacoesCount } = await supabase
+      .from('crm_interacoes')
+      .select('*', { count: 'exact', head: true })
+      .eq('corretor_id', corretorId)
+      .gte('created_at', seteDiasAtras);
+
+    const funnelColors: Record<string, string> = {
+      novo_lead: '#3B82F6',
+      qualificado: '#8B5CF6',
+      proposta_enviada: '#F59E0B',
+      documentacao: '#06B6D4',
+      fechado: '#10B981',
+      perdido: '#EF4444',
+    };
+
+    const funnelLabels: Record<string, string> = {
+      novo_lead: 'Novo Lead',
+      qualificado: 'Qualificado',
+      proposta_enviada: 'Proposta Enviada',
+      documentacao: 'Documentação',
+      fechado: 'Fechado',
+      perdido: 'Perdido',
+    };
+
+    const funil = columns.map((col) => ({
+      etapa: funnelLabels[col] ?? col,
+      total: porColuna[col] ?? 0,
+      cor: funnelColors[col] ?? '#666',
+    }));
+
+    return {
+      success: true,
+      data: {
+        totalLeads: allCards.length,
+        porColuna: porColuna as Record<KanbanColumnSlug, number>,
+        valorTotalPipeline,
+        valorFechado,
+        taxaConversao,
+        tempoMedioPorEtapa: {},
+        leadsHot,
+        leadsStale,
+        scoreDistribuicao: Object.entries(scoreRanges).map(([faixa, count]) => ({ faixa, count })),
+        interacoesUltimos7d: interacoesCount ?? 0,
+        funil,
+      },
+    };
+  } catch (err) {
+    console.error('[getCrmStats]', err);
+    return { success: false, error: 'Erro ao carregar métricas' };
+  }
+}
+
+// ========================================
+// LEADS LIST (Tabela com filtros)
+// ========================================
+
+export type LeadListFilters = {
+  search?: string;
+  colunaSlug?: KanbanColumnSlug | 'todos';
+  prioridade?: string;
+  scoreMin?: number;
+  scoreMax?: number;
+  orderBy?: 'created_at' | 'updated_at' | 'score' | 'valor_estimado';
+  orderDir?: 'asc' | 'desc';
+  page?: number;
+  perPage?: number;
+};
+
+export type LeadListResult = {
+  leads: CrmCardEnriched[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+};
+
+export async function getLeadsList(
+  corretorId: string,
+  filters: LeadListFilters = {},
+): Promise<{ success: boolean; data?: LeadListResult; error?: string }> {
+  try {
+    const supabase = createServiceClient();
+    const {
+      search,
+      colunaSlug = 'todos',
+      prioridade,
+      scoreMin,
+      scoreMax,
+      orderBy = 'updated_at',
+      orderDir = 'desc',
+      page = 1,
+      perPage = 20,
+    } = filters;
+
+    let query = supabase
+      .from('crm_cards')
+      .select(`
+        *,
+        lead:insurance_leads(nome, whatsapp, email, operadora_atual, valor_atual)
+      `, { count: 'exact' })
+      .eq('corretor_id', corretorId);
+
+    if (colunaSlug && colunaSlug !== 'todos') {
+      query = query.eq('coluna_slug', colunaSlug);
+    }
+
+    if (prioridade) {
+      query = query.eq('prioridade', prioridade);
+    }
+
+    if (scoreMin !== undefined) {
+      query = query.gte('score', scoreMin);
+    }
+
+    if (scoreMax !== undefined) {
+      query = query.lte('score', scoreMax);
+    }
+
+    if (search) {
+      query = query.ilike('titulo', `%${search}%`);
+    }
+
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
+
+    query = query
+      .order(orderBy, { ascending: orderDir === 'asc' })
+      .range(from, to);
+
+    const { data, count, error } = await query;
+
+    if (error) throw error;
+
+    const enriched = (data ?? []).map((card) =>
+      enrichCard(card as CrmCard & { lead?: Record<string, unknown> | null }),
+    );
+
+    return {
+      success: true,
+      data: {
+        leads: enriched,
+        total: count ?? 0,
+        page,
+        perPage,
+        totalPages: Math.ceil((count ?? 0) / perPage),
+      },
+    };
+  } catch (err) {
+    console.error('[getLeadsList]', err);
+    return { success: false, error: 'Erro ao carregar leads' };
+  }
+}
+
+// ========================================
+// DELETE CARD
+// ========================================
+
+export async function deleteCrmCard(
+  cardId: string,
+  corretorId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = createServiceClient();
+
+    const { error } = await supabase
+      .from('crm_cards')
+      .delete()
+      .eq('id', cardId)
+      .eq('corretor_id', corretorId);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (err) {
+    console.error('[deleteCrmCard]', err);
+    return { success: false, error: 'Erro ao excluir card' };
+  }
+}
+
+// ========================================
+// UPDATE CARD DETAILS (edição completa)
+// ========================================
+
+export async function updateCardDetails(
+  cardId: string,
+  corretorId: string,
+  updates: {
+    titulo?: string;
+    valor_estimado?: number | null;
+    prioridade?: 'baixa' | 'media' | 'alta' | 'urgente';
+    tags?: string[];
+  },
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const supabase = createServiceClient();
+
+    const { error } = await supabase
+      .from('crm_cards')
+      .update(updates)
+      .eq('id', cardId)
+      .eq('corretor_id', corretorId);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (err) {
+    console.error('[updateCardDetails]', err);
+    return { success: false, error: 'Erro ao atualizar card' };
+  }
+}
