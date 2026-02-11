@@ -5,32 +5,48 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import {
-  DollarSign,
-  TrendingUp,
   Laptop,
   Shield,
   Users,
-  Zap,
   CheckCircle,
   ArrowRight,
-  Star,
-  Award,
   BarChart3,
   Briefcase,
-  HeartHandshake,
   Rocket,
   ChevronDown,
   Phone,
   Mail,
-  MapPin,
-  Clock,
   Target,
-  Gift,
   GraduationCap,
-  Handshake,
+  Home,
+  FolderOpen,
+  Share2,
+  TrendingUp,
+  DollarSign,
+  Eye,
+  UserPlus,
+  Sparkles,
+  Calculator,
+  FileUp,
+  Brain,
+  Trophy,
+  Heart,
+  Car,
+  ShieldCheck,
+  BookOpen,
+  Megaphone,
+  Zap,
+  Clock,
+  Upload,
+  FileCheck,
+  MousePointerClick,
+  Gift,
+  Star,
+  Send,
+  Headphones,
 } from 'lucide-react';
 
-// ─── Animações ─────────────────────────────────────────────
+// --- Animacoes ---
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
@@ -45,123 +61,173 @@ const scaleIn = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: 'easeOut' as const } },
 };
 
-// ─── Dados ─────────────────────────────────────────────────
+// --- PRODUTOS que trabalhamos ---
+const PRODUTOS = [
+  { icon: Heart, title: 'Plano de saude', desc: 'Amil, Bradesco, SulAmerica, Unimed, NotreDame e mais' },
+  { icon: ShieldCheck, title: 'Seguro de vida', desc: 'Individual, familiar e empresarial com as maiores seguradoras' },
+  { icon: Car, title: 'Seguro automotivo', desc: 'Carro, moto e frotas com cotacao comparativa automatica' },
+  { icon: Shield, title: 'Outros seguros', desc: 'Residencial, viagem, odontologico e previdencia privada' },
+];
+
+// --- DIFERENCIAIS ---
 const DIFERENCIAIS = [
   {
-    icon: DollarSign,
-    title: 'Comissões Acima do Mercado',
-    desc: 'Tabela agressiva com comissões até 300% superiores à média do mercado. Recorrência vitalícia + bonificações por meta.',
-    highlight: 'Até 300%',
+    icon: FolderOpen,
+    title: 'Materiais organizados',
+    desc: 'Todos os materiais das operadoras em um so lugar. Tabelas, laminas, manuais e guias comerciais. Acesse de qualquer lugar, a qualquer hora.',
+    highlight: 'Exclusivo',
   },
   {
-    icon: Laptop,
-    title: 'Plataforma Completa',
-    desc: 'CRM, Pipeline Kanban, gerador de propostas, cotações automáticas e materiais de vendas — tudo integrado no seu painel.',
-    highlight: 'All-in-One',
+    icon: Calculator,
+    title: 'Multicalculo inteligente',
+    desc: 'Compare planos de todas as operadoras simultaneamente. Gere cotacoes profissionais em segundos, com valores por faixa etaria e tipo de contratacao.',
+    highlight: 'Multicotacao',
   },
   {
-    icon: Zap,
-    title: 'Leads Qualificados',
-    desc: 'Receba leads pré-qualificados direto no seu CRM. Investimos pesado em tráfego pago para você vender mais.',
-    highlight: 'Leads ∞',
+    icon: FileUp,
+    title: 'Envio de documentos facilitado',
+    desc: 'Seu cliente arrasta e solta os documentos na plataforma. Nossa IA preenche automaticamente os dados. Sem digitacao manual, sem erro.',
+    highlight: 'Drag & Drop',
   },
   {
-    icon: Shield,
-    title: 'Suporte Premium',
-    desc: 'Equipe dedicada para pós-venda, movimentações e sinistros. Você foca em vender, nós cuidamos do resto.',
+    icon: Brain,
+    title: 'IA para analise de desempenho',
+    desc: 'Inteligencia artificial que analisa sua performance, identifica padroes de sucesso e sugere acoes para voce vender mais e melhor.',
+    highlight: 'AI Powered',
+  },
+  {
+    icon: Send,
+    title: 'Propostas + assistente 24h',
+    desc: 'Gere e envie propostas direto pela plataforma. Nosso assistente funciona 24h para encaminhar tudo as operadoras. Voce nao precisa esperar.',
     highlight: '24/7',
   },
   {
-    icon: GraduationCap,
-    title: 'Treinamento Contínuo',
-    desc: 'Acesso a treinamentos exclusivos, workshops de vendas e materiais atualizados das operadoras.',
+    icon: Trophy,
+    title: 'Metas e bonificacoes',
+    desc: 'Campanhas de metas com premios e bonificacoes para quem se destaca. Quanto mais voce vende, mais voce ganha alem das comissoes.',
+    highlight: 'Premios',
+  },
+  {
+    icon: BookOpen,
+    title: 'Blog e dicas de marketing',
+    desc: 'Conteudo exclusivo sobre marketing digital para corretores. Como atrair clientes nas redes sociais, criar autoridade e gerar leads.',
     highlight: 'Academy',
   },
   {
+    icon: Share2,
+    title: 'Ferramentas de divulgacao',
+    desc: 'Materiais prontos para redes sociais: banners, carrosséis, stories. Personalize com sua marca e divulgue no Instagram, WhatsApp e mais.',
+    highlight: 'Marketing',
+  },
+  {
     icon: BarChart3,
-    title: 'Dashboard de Performance',
-    desc: 'Acompanhe sua produção, comissões, metas e ranking em tempo real com dashboards inteligentes.',
+    title: 'Dashboard em tempo real',
+    desc: 'Acompanhe leads, propostas, vendas, comissoes e performance. Tudo visual, intuitivo e atualizado em tempo real no seu painel.',
     highlight: 'Real-time',
+  },
+  {
+    icon: Shield,
+    title: 'Suporte de gestor dedicado',
+    desc: 'Voce nao estara sozinho. Tera o apoio direto de um gestor para tirar duvidas, orientar negociacoes e te ajudar a fechar mais vendas.',
+    highlight: 'Dedicado',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Treinamentos continuos',
+    desc: 'Receba treinamentos praticos, atualizacoes de mercado, dicas de vendas exclusivas e novidades sobre produtos. Evolua constantemente.',
+    highlight: 'Capacitacao',
+  },
+  {
+    icon: Laptop,
+    title: 'Plataforma completa (CRM)',
+    desc: 'CRM profissional, Pipeline Kanban, gerador de cotacoes, propostas automatizadas. Tudo integrado em um painel moderno. De qualquer dispositivo.',
+    highlight: 'All-in-One',
   },
 ];
 
+// --- OPORTUNIDADES ---
+const OPORTUNIDADES = [
+  {
+    icon: Home,
+    title: 'Trabalhe de onde quiser',
+    desc: 'Toda a operacao e digital. Trabalhe de casa, de um cafe ou de onde preferir. Basta ter internet e vontade de vender.',
+  },
+  {
+    icon: DollarSign,
+    title: 'Oportunidade real de renda',
+    desc: 'O mercado de saude e seguros nao para de crescer. Aqui voce tem a estrutura certa para transformar isso em ganho financeiro concreto.',
+  },
+  {
+    icon: Eye,
+    title: 'Acompanhe suas vendas',
+    desc: 'Veja em tempo real o status de cada proposta, cada lead e cada comissao. Transparencia total sobre tudo que e seu.',
+  },
+  {
+    icon: UserPlus,
+    title: 'Indique e ganhe',
+    desc: 'Indique clientes diretamente pela plataforma e acompanhe cada indicacao ate a conversao. Mais uma fonte de receita para voce.',
+  },
+];
+
+// --- Como funciona ---
 const COMO_FUNCIONA = [
   {
     step: '01',
-    title: 'Solicite sua vaga',
-    desc: 'Preencha o formulário com seus dados profissionais. É rápido e sem burocracia.',
+    title: 'Cadastre-se',
+    desc: 'Preencha o formulario com seus dados profissionais. O processo e rapido, gratuito e sem burocracia nenhuma.',
     icon: Target,
   },
   {
     step: '02',
-    title: 'Aprovação e Onboarding',
-    desc: 'Nosso time analisa seu perfil e libera seu acesso ao painel em até 24h com credenciais exclusivas.',
+    title: 'Onboarding',
+    desc: 'Nosso time valida seu perfil e libera seu acesso ao painel completo em ate 24 horas. Voce recebe tudo pronto para comecar.',
     icon: CheckCircle,
   },
   {
     step: '03',
-    title: 'Comece a Vender',
-    desc: 'Acesse o CRM, receba leads, gere cotações e acompanhe suas comissões. Simples assim.',
+    title: 'Comece a vender',
+    desc: 'Acesse os materiais, use o multicalculo, envie propostas e acompanhe tudo pelo dashboard. Simples assim.',
     icon: Rocket,
   },
 ];
 
-const DEPOIMENTOS = [
-  {
-    nome: 'Ricardo Mendes',
-    cargo: 'Corretor há 8 anos',
-    texto: 'Em 3 meses na Humano Saúde, minhas comissões triplicaram. O sistema é completo e os leads são quentes.',
-    estrelas: 5,
-  },
-  {
-    nome: 'Fernanda Costa',
-    cargo: 'Corretora PJ',
-    texto: 'O suporte pós-venda me dá liberdade para focar 100% em prospecção. Melhor parceria da minha carreira.',
-    estrelas: 5,
-  },
-  {
-    nome: 'Marcos Oliveira',
-    cargo: 'Corretor MEI',
-    texto: 'Material de vendas profissional, gerador de banner e CRM top. Não preciso mais investir em ferramentas externas.',
-    estrelas: 5,
-  },
-];
-
-const NUMEROS = [
-  { valor: '200+', label: 'Corretores Ativos' },
-  { valor: 'R$ 2M+', label: 'Comissões Pagas/mês' },
-  { valor: '15+', label: 'Operadoras Parceiras' },
-  { valor: '98%', label: 'Satisfação dos Corretores' },
-];
-
+// --- FAQ ---
 const FAQ_ITEMS = [
   {
     q: 'Preciso ter SUSEP para me cadastrar?',
-    a: 'Sim, é necessário ter registro ativo na SUSEP para atuar como corretor. Se você está em processo de obtenção, pode se cadastrar mesmo assim e informar quando obtiver.',
+    a: 'Sim, e necessario ter registro ativo na SUSEP para atuar como corretor de planos de saude. Se voce esta em processo de obtencao, pode se cadastrar e informar quando obtiver.',
   },
   {
-    q: 'Qual o valor de investimento para começar?',
-    a: 'Zero. Não cobramos nenhuma taxa de adesão, mensalidade ou licença. Você só precisa de vontade de vender. Todo o investimento em plataforma, leads e marketing é por nossa conta.',
+    q: 'Preciso pagar alguma coisa para comecar?',
+    a: 'Absolutamente nada. Nao cobramos taxa de adesao, mensalidade ou licenca. Todo o investimento em plataforma, tecnologia e marketing e por nossa conta.',
   },
   {
-    q: 'Como funciona o pagamento das comissões?',
-    a: 'As comissões são depositadas diretamente na sua conta bancária cadastrada no painel. Você acompanha tudo em tempo real no dashboard Financeiro, com extrato detalhado.',
+    q: 'Preciso trabalhar em horario fixo?',
+    a: 'Nao. Voce define seus horarios e sua rotina. A plataforma esta disponivel 24h para que voce trabalhe quando e de onde preferir.',
   },
   {
     q: 'Posso trabalhar com outras corretoras ao mesmo tempo?',
-    a: 'Sim, não exigimos exclusividade. Porém, nossos diferenciais de comissão e plataforma fazem com que a maioria dos corretores concentrem suas operações conosco.',
+    a: 'Sim, nao exigimos exclusividade. Porem, nossa estrutura e diferenciais fazem com que a maioria dos corretores prefiram concentrar suas operacoes conosco.',
   },
   {
-    q: 'Quais operadoras vocês trabalham?',
-    a: 'Trabalhamos com as maiores operadoras do Brasil: Amil, Bradesco Saúde, SulAmérica, Unimed, NotreDame Intermédica, Porto Seguro Saúde e muitas outras.',
+    q: 'Quais produtos posso vender?',
+    a: 'Planos de saude, seguro de vida, seguro automotivo, odontologico, residencial e outros seguros. Todas as principais operadoras e seguradoras do Brasil.',
   },
   {
-    q: 'Recebo leads da corretora?',
-    a: 'Sim. Investimos fortemente em marketing digital e distribuímos leads qualificados para nossa equipe de corretores, direto no CRM da plataforma.',
+    q: 'Vou ter algum suporte ou fico sozinho?',
+    a: 'Voce tera um gestor dedicado, treinamentos continuos, dicas de marketing e uma equipe de suporte para questoes operacionais. Ninguem fica sozinho aqui.',
+  },
+  {
+    q: 'Como funciona o multicalculo?',
+    a: 'Voce insere as idades dos beneficiarios, seleciona o tipo de plano e a plataforma compara automaticamente dezenas de opcoes de diferentes operadoras, gerando uma cotacao profissional.',
+  },
+  {
+    q: 'A IA realmente preenche os documentos sozinha?',
+    a: 'Sim. Quando o cliente faz upload de um documento (carteirinha, apolice, etc.), nossa IA extrai automaticamente os dados como nomes, idades, operadora e valores, e preenche tudo. Sem digitacao.',
   },
 ];
 
-// ─── Componente de Seção ───────────────────────────────────
+// --- Componente de Secao ---
 function Section({ children, className = '', id }: { children: React.ReactNode; className?: string; id?: string }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
@@ -179,16 +245,16 @@ function Section({ children, className = '', id }: { children: React.ReactNode; 
   );
 }
 
-// ─── FAQ Accordion ─────────────────────────────────────────
+// --- FAQ Accordion ---
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-white/10">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-5 text-left cursor-pointer"
+        className="w-full flex items-center justify-between py-5 lg:py-6 text-left cursor-pointer"
       >
-        <span className="text-sm lg:text-base font-semibold text-white pr-4">{q}</span>
+        <span className="text-base sm:text-lg lg:text-xl font-semibold text-white pr-4">{q}</span>
         <ChevronDown className={`h-5 w-5 text-[#D4AF37] flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       <motion.div
@@ -197,13 +263,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         transition={{ duration: 0.3 }}
         className="overflow-hidden"
       >
-        <p className="text-sm text-white/60 pb-5 leading-relaxed">{a}</p>
+        <p className="text-base sm:text-lg text-white/60 pb-5 leading-relaxed">{a}</p>
       </motion.div>
     </div>
   );
 }
 
-// ─── Página Principal ──────────────────────────────────────
+// --- Pagina Principal ---
 export default function SejaCorretorPage() {
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -216,15 +282,13 @@ export default function SejaCorretorPage() {
   return (
     <div className="min-h-screen bg-[#050505] text-white font-montserrat overflow-x-hidden">
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  HEADER                                            */}
-      {/* ═══════════════════════════════════════════════════ */}
+      {/* HEADER */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/90 backdrop-blur-lg shadow-2xl' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex justify-between items-center">
           <Link href="/">
             <Image
               src="/images/logos/LOGO 1 SEM FUNDO.png"
-              alt="Humano Saúde"
+              alt="Humano Saude"
               width={180}
               height={60}
               className="h-10 lg:h-14 w-auto"
@@ -234,24 +298,20 @@ export default function SejaCorretorPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard/corretor/cadastro"
-              className="px-5 py-2.5 rounded-xl bg-[#D4AF37] text-black font-bold text-xs tracking-wider hover:bg-[#F6E05E] transition-all"
+              className="px-5 py-2.5 rounded-xl bg-[#D4AF37] text-black font-bold text-base tracking-wider hover:bg-[#F6E05E] transition-all"
             >
-              QUERO SER CORRETOR
+              Quero ser corretor
             </Link>
           </div>
         </div>
       </header>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  HERO                                              */}
-      {/* ═══════════════════════════════════════════════════ */}
+      {/* ══════════════ HERO ══════════════ */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_#1a1508_0%,_#050505_50%,_#000_100%)]" />
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#D4AF37]/5 blur-[150px] rounded-full" />
           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#D4AF37]/3 blur-[120px] rounded-full" />
-          {/* Grid sutil */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -262,28 +322,26 @@ export default function SejaCorretorPage() {
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-8 text-center pt-28 pb-20">
-          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5 text-[#D4AF37] text-xs font-bold tracking-widest mb-8"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5 text-[#D4AF37] text-sm font-bold tracking-widest mb-8"
           >
             <Briefcase className="h-3.5 w-3.5" />
-            PROGRAMA DE CORRETORES 2026
+            Programa de corretores 2026
           </motion.div>
 
-          {/* Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-4xl md:text-5xl lg:text-7xl font-black leading-[1.1] mb-6 font-cinzel"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 font-cinzel"
           >
-            <span className="text-white">Sua Carreira</span>
+            <span className="text-white">Seja especialista</span>
             <br />
             <span className="bg-gradient-to-r from-[#D4AF37] via-[#F6E05E] to-[#D4AF37] bg-clip-text text-transparent">
-              Merece Mais.
+              em Seguros.
             </span>
           </motion.h1>
 
@@ -291,14 +349,14 @@ export default function SejaCorretorPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl md:text-2xl lg:text-2xl text-white/60 max-w-3xl mx-auto mb-10 leading-relaxed"
           >
-            As <strong className="text-white">melhores comissões</strong> do mercado de planos de saúde,
-            uma <strong className="text-white">plataforma completa</strong> de gestão e{' '}
-            <strong className="text-white">leads qualificados</strong> para você vender mais.
+            Venda <strong className="text-white">planos de saude, seguros de vida e automotivos</strong> com{' '}
+            <strong className="text-white">multicalculo inteligente</strong>, propostas automaticas,{' '}
+            <strong className="text-white">IA que preenche documentos</strong> e um assistente{' '}
+            <strong className="text-white">24 horas</strong>. Tudo sem investir nada.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -307,88 +365,62 @@ export default function SejaCorretorPage() {
           >
             <Link
               href="/dashboard/corretor/cadastro"
-              className="group flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#aa771c] text-black font-bold text-sm tracking-wider hover:shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all"
+              className="group flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#aa771c] text-black font-bold text-base tracking-wider hover:shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all"
             >
-              SOLICITAR MINHA VAGA
+              Quero fazer parte
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <a
-              href="#diferenciais"
-              className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-white/10 text-white/80 text-sm font-semibold hover:bg-white/5 transition-all"
+              href="#produtos"
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-white/10 text-white/80 text-base font-semibold hover:bg-white/5 transition-all"
             >
-              CONHEÇA OS BENEFÍCIOS
+              Como funciona
               <ChevronDown className="h-4 w-4" />
             </a>
           </motion.div>
-
-          {/* Números rápidos */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 max-w-3xl mx-auto"
-          >
-            {NUMEROS.map((n) => (
-              <div key={n.label} className="text-center">
-                <p className="text-2xl md:text-3xl font-black text-[#D4AF37] font-cinzel">{n.valor}</p>
-                <p className="text-xs text-white/40 mt-1 tracking-wider">{n.label}</p>
-              </div>
-            ))}
-          </motion.div>
         </div>
 
-        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
         >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          >
+          <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
             <ChevronDown className="h-6 w-6 text-[#D4AF37]/50" />
           </motion.div>
         </motion.div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  DIFERENCIAIS                                      */}
-      {/* ═══════════════════════════════════════════════════ */}
-      <Section id="diferenciais" className="bg-[#050505]">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
+      {/* ══════════════ PRODUTOS QUE TRABALHAMOS ══════════════ */}
+      <Section id="produtos" className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
           <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <span className="text-[#D4AF37] text-xs font-bold tracking-[4px] mb-4 block">POR QUE NOS ESCOLHER</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black font-cinzel">
-              Diferenciais{' '}
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">Exclusivos</span>
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Produtos</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
+              O que voce pode{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">vender</span>
             </h2>
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              Nao se limite a um produto so. Aqui voce tem acesso a um portfolio completo para atender qualquer necessidade do seu cliente.
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {DIFERENCIAIS.map((d, i) => {
-              const Icon = d.icon;
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {PRODUTOS.map((p, i) => {
+              const Icon = p.icon;
               return (
                 <motion.div
-                  key={d.title}
+                  key={p.title}
                   variants={fadeUp}
                   custom={i + 1}
-                  className="group relative bg-white/[0.02] border border-white/5 rounded-2xl p-6 hover:border-[#D4AF37]/20 hover:bg-[#D4AF37]/[0.02] transition-all duration-500"
+                  className="text-center bg-white/[0.02] border border-white/5 rounded-2xl p-6 lg:p-8 hover:border-[#D4AF37]/20 transition-all"
                 >
-                  {/* Highlight badge */}
-                  <div className="absolute top-4 right-4">
-                    <span className="px-2.5 py-1 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-[10px] font-bold tracking-wider">
-                      {d.highlight}
-                    </span>
+                  <div className="h-16 w-16 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center mx-auto mb-5">
+                    <Icon className="h-8 w-8 text-[#D4AF37]" />
                   </div>
-
-                  <div className="h-12 w-12 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center mb-4 group-hover:bg-[#D4AF37]/20 transition-colors">
-                    <Icon className="h-6 w-6 text-[#D4AF37]" />
-                  </div>
-
-                  <h3 className="text-lg font-bold text-white mb-2">{d.title}</h3>
-                  <p className="text-sm text-white/50 leading-relaxed">{d.desc}</p>
+                  <h3 className="text-xl font-bold text-white mb-2">{p.title}</h3>
+                  <p className="text-base text-white/50 leading-relaxed">{p.desc}</p>
                 </motion.div>
               );
             })}
@@ -396,93 +428,422 @@ export default function SejaCorretorPage() {
         </div>
       </Section>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  COMISSÕES — Grande destaque                       */}
-      {/* ═══════════════════════════════════════════════════ */}
-      <Section className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
+      {/* ══════════════ DIFERENCIAIS ══════════════ */}
+      <Section id="diferenciais" className="bg-[#050505]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <span className="text-[#D4AF37] text-xs font-bold tracking-[4px] mb-4 block">TABELA DE COMISSÕES</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black font-cinzel mb-4">
-              Ganhe{' '}
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">Muito Mais</span>
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Nossos diferenciais</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
+              Tudo que voce{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">recebe aqui</span>
             </h2>
-            <p className="text-white/50 max-w-2xl mx-auto">
-              Nossas comissões são referência no mercado. Sem teto, sem limite. Quanto mais você vende, mais você ganha.
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              Mais do que uma corretora. Uma estrutura completa com tecnologia, IA e suporte para voce construir sua carreira com as melhores ferramentas do mercado.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Individual */}
-            <motion.div variants={fadeUp} custom={1} className="relative bg-white/[0.02] border border-white/10 rounded-2xl p-8 text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1 rounded-full bg-white/10 text-white/60 text-[10px] font-bold tracking-widest">INDIVIDUAL</span>
-              </div>
-              <HeartHandshake className="h-10 w-10 text-[#D4AF37] mx-auto mb-4" />
-              <p className="text-4xl font-black text-white font-cinzel mb-1">40%</p>
-              <p className="text-sm text-white/40 mb-4">Comissão sobre a venda</p>
-              <ul className="text-xs text-white/50 space-y-2 text-left">
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" /> Recorrência vitalícia</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" /> Pagamento mensal garantido</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" /> Sem taxa de adesão</li>
-              </ul>
-            </motion.div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {DIFERENCIAIS.map((d, i) => {
+              const Icon = d.icon;
+              return (
+                <motion.div
+                  key={d.title}
+                  variants={fadeUp}
+                  custom={i + 1}
+                  className="group relative bg-white/[0.02] border border-white/5 rounded-2xl p-5 lg:p-6 hover:border-[#D4AF37]/20 hover:bg-[#D4AF37]/[0.02] transition-all duration-500"
+                >
+                  <div className="absolute top-3 right-3">
+                    <span className="px-2 py-0.5 rounded-full bg-[#D4AF37]/10 text-[#D4AF37] text-[9px] font-bold tracking-wider">
+                      {d.highlight}
+                    </span>
+                  </div>
 
-            {/* Empresarial — destaque */}
-            <motion.div variants={fadeUp} custom={2} className="relative bg-gradient-to-b from-[#D4AF37]/10 to-transparent border-2 border-[#D4AF37]/30 rounded-2xl p-8 text-center scale-105">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1 rounded-full bg-[#D4AF37] text-black text-[10px] font-black tracking-widest">EMPRESARIAL</span>
-              </div>
-              <Award className="h-10 w-10 text-[#D4AF37] mx-auto mb-4" />
-              <p className="text-5xl font-black text-[#D4AF37] font-cinzel mb-1">80%</p>
-              <p className="text-sm text-white/40 mb-4">Comissão sobre a venda</p>
-              <ul className="text-xs text-white/50 space-y-2 text-left">
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-[#D4AF37] flex-shrink-0" /> Maior comissão do mercado</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-[#D4AF37] flex-shrink-0" /> Bonificação por carteira</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-[#D4AF37] flex-shrink-0" /> Suporte pós-venda dedicado</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-[#D4AF37] flex-shrink-0" /> Leads empresariais exclusivos</li>
-              </ul>
-            </motion.div>
+                  <div className="h-11 w-11 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center mb-4 group-hover:bg-[#D4AF37]/20 transition-colors">
+                    <Icon className="h-5 w-5 text-[#D4AF37]" />
+                  </div>
 
-            {/* Adesão */}
-            <motion.div variants={fadeUp} custom={3} className="relative bg-white/[0.02] border border-white/10 rounded-2xl p-8 text-center">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1 rounded-full bg-white/10 text-white/60 text-[10px] font-bold tracking-widest">ADESÃO</span>
+                  <h3 className="text-lg lg:text-xl font-bold text-white mb-2">{d.title}</h3>
+                  <p className="text-sm lg:text-base text-white/50 leading-relaxed">{d.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </Section>
+
+      {/* ══════════════ MOCKUP MULTICALCULO ══════════════ */}
+      <Section className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Multicalculo</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
+              Compare{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">dezenas de planos</span>
+              {' '}em segundos
+            </h2>
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              Insira as idades, escolha o tipo e nossa plataforma compara automaticamente todas as operadoras. Cotacao profissional pronta para enviar ao cliente.
+            </p>
+          </motion.div>
+
+          <motion.div variants={scaleIn} className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]">
+            <div className="p-5 lg:p-8">
+              {/* Header do multicalculo */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-10 w-10 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center">
+                  <Calculator className="h-5 w-5 text-[#D4AF37]" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">Multicalculo inteligente</p>
+                  <p className="text-sm text-white/40">Compare operadoras lado a lado</p>
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                  <span className="text-xs text-green-400">Online</span>
+                </div>
               </div>
-              <Users className="h-10 w-10 text-[#D4AF37] mx-auto mb-4" />
-              <p className="text-4xl font-black text-white font-cinzel mb-1">50%</p>
-              <p className="text-sm text-white/40 mb-4">Comissão sobre a venda</p>
-              <ul className="text-xs text-white/50 space-y-2 text-left">
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" /> Planos por adesão facilitados</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" /> Tabelas negociadas</li>
-                <li className="flex items-center gap-2"><CheckCircle className="h-3.5 w-3.5 text-green-400 flex-shrink-0" /> Comissionamento acelerado</li>
-              </ul>
-            </motion.div>
+
+              {/* Input area */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3">
+                  <p className="text-[10px] text-white/30 mb-1">Beneficiarios</p>
+                  <div className="flex gap-1.5">
+                    {['32', '28', '5'].map((age, i) => (
+                      <span key={i} className="px-2 py-1 bg-[#D4AF37]/10 text-[#D4AF37] rounded text-xs font-bold">{age} anos</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3">
+                  <p className="text-[10px] text-white/30 mb-1">Tipo</p>
+                  <p className="text-sm text-white font-semibold">PME</p>
+                </div>
+                <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3">
+                  <p className="text-[10px] text-white/30 mb-1">Acomodacao</p>
+                  <p className="text-sm text-white font-semibold">Apartamento</p>
+                </div>
+              </div>
+
+              {/* Resultados mockup */}
+              <div className="space-y-3">
+                {[
+                  { op: 'Amil', plano: 'Amil 400 QC Nac', valor: 'R$ 1.247,90', dest: true },
+                  { op: 'Bradesco', plano: 'Nacional Flex', valor: 'R$ 1.389,50', dest: false },
+                  { op: 'SulAmerica', plano: 'Prestige', valor: 'R$ 1.520,00', dest: false },
+                  { op: 'Unimed', plano: 'Classico Nacional', valor: 'R$ 1.198,30', dest: true },
+                ].map((plano, i) => (
+                  <div key={i} className={`flex items-center justify-between p-3 rounded-xl border ${plano.dest ? 'border-[#D4AF37]/30 bg-[#D4AF37]/[0.03]' : 'border-white/5 bg-white/[0.02]'}`}>
+                    <div className="flex items-center gap-3">
+                      {plano.dest && <Star className="h-4 w-4 text-[#D4AF37]" />}
+                      <div>
+                        <p className="text-sm font-semibold text-white">{plano.plano}</p>
+                        <p className="text-sm text-white/40">{plano.op}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-bold text-white">{plano.valor}</p>
+                      <p className="text-[10px] text-white/30">/mes</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent pointer-events-none" />
+          </motion.div>
+
+          <motion.div variants={fadeUp} custom={2} className="text-center mt-8">
+            <p className="text-sm sm:text-base text-white/40">Amil · Bradesco · SulAmerica · Unimed · NotreDame · Porto · Hapvida e mais</p>
+          </motion.div>
+        </div>
+      </Section>
+
+      {/* ══════════════ MOCKUP UPLOAD DOCUMENTOS (Drag & Drop + IA) ══════════════ */}
+      <Section className="bg-[#050505]">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Documentacao inteligente</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
+              Arraste, solte e{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">a IA faz o resto</span>
+            </h2>
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              Seu cliente arrasta o documento para a plataforma. Nossa inteligencia artificial extrai todos os dados automaticamente. Sem digitacao, sem erro, sem perda de tempo.
+            </p>
+          </motion.div>
+
+          <motion.div variants={scaleIn} className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]">
+            <div className="p-5 lg:p-8">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Area de Drag & Drop */}
+                <div className="flex flex-col items-center justify-center">
+                  <div className="w-full border-2 border-dashed border-[#D4AF37]/30 rounded-2xl p-8 lg:p-12 text-center bg-[#D4AF37]/[0.02] hover:border-[#D4AF37]/50 transition-colors">
+                    <motion.div
+                      animate={{ y: [0, -8, 0] }}
+                      transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+                    >
+                      <Upload className="h-12 w-12 lg:h-16 lg:w-16 text-[#D4AF37]/50 mx-auto mb-4" />
+                    </motion.div>
+                    <p className="text-base lg:text-lg font-bold text-white mb-2">Arraste seus documentos aqui</p>
+                    <p className="text-xs lg:text-sm text-white/40 mb-4">ou clique para selecionar</p>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {['PDF', 'JPG', 'PNG', 'Carteirinha', 'Apolice'].map((t) => (
+                        <span key={t} className="px-2.5 py-1 rounded-full bg-white/5 text-[10px] text-white/40 font-medium">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Arquivo sendo processado */}
+                  <div className="w-full mt-4 bg-white/[0.02] border border-white/5 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                      <FileCheck className="h-5 w-5 text-green-400" />
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-white">carteirinha_amil.pdf</p>
+                        <p className="text-xs text-green-400">Processado com sucesso</p>
+                      </div>
+                      <Brain className="h-5 w-5 text-[#D4AF37] animate-pulse" />
+                    </div>
+                    <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] rounded-full"
+                        initial={{ width: '0%' }}
+                        animate={{ width: '100%' }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dados extraidos pela IA */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 lg:p-6">
+                  <div className="flex items-center gap-2 mb-5">
+                    <Brain className="h-5 w-5 text-[#D4AF37]" />
+                    <p className="text-sm font-bold text-white">Dados extraidos pela IA</p>
+                    <span className="ml-auto px-2 py-0.5 bg-green-500/10 text-green-400 rounded-full text-[10px] font-bold">98.7% precisao</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Titular', value: 'Maria Silva Santos', conf: '99%' },
+                      { label: 'Operadora', value: 'AMIL', conf: '100%' },
+                      { label: 'Beneficiarios', value: '3 (32, 28, 5 anos)', conf: '98%' },
+                      { label: 'Plano atual', value: 'Amil 400 QC Nacional', conf: '97%' },
+                      { label: 'Valor mensal', value: 'R$ 1.890,50', conf: '95%' },
+                      { label: 'Tipo', value: 'PME - Empresarial', conf: '99%' },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                        <div>
+                          <p className="text-[10px] text-white/30">{item.label}</p>
+                          <p className="text-sm font-semibold text-white">{item.value}</p>
+                        </div>
+                        <span className="text-[10px] text-green-400 font-bold">{item.conf}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 p-3 bg-[#D4AF37]/[0.05] border border-[#D4AF37]/20 rounded-xl">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-[#D4AF37]" />
+                      <p className="text-xs text-[#D4AF37] font-semibold">Pronto para gerar cotacao automatica</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/50 via-transparent to-transparent pointer-events-none" />
+          </motion.div>
+        </div>
+      </Section>
+
+      {/* ══════════════ MOCKUP DASHBOARD + PIPELINE ══════════════ */}
+      <Section className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Seu painel</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
+              Dashboard{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">profissional</span>
+            </h2>
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              CRM completo, pipeline Kanban, financeiro, IA e tudo que voce precisa . Acessivel de qualquer dispositivo.
+            </p>
+          </motion.div>
+
+          <motion.div variants={scaleIn} className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]">
+            <div className="p-5 lg:p-8">
+              {/* Big Numbers */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                {[
+                  { label: 'Leads ativos', value: '47', icon: Users, color: 'text-blue-400' },
+                  { label: 'Propostas', value: '23', icon: Briefcase, color: 'text-green-400' },
+                  { label: 'Comissoes', value: 'R$ 18.5K', icon: DollarSign, color: 'text-[#D4AF37]' },
+                  { label: 'Conversao', value: '68%', icon: TrendingUp, color: 'text-purple-400' },
+                ].map((card) => {
+                  const CardIcon = card.icon;
+                  return (
+                    <div key={card.label} className="bg-white/[0.03] border border-white/5 rounded-xl p-3">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <CardIcon className={`h-4 w-4 ${card.color}`} />
+                        <span className="text-[10px] sm:text-sm text-white/40">{card.label}</span>
+                      </div>
+                      <p className="text-lg sm:text-xl lg:text-2xl font-bold text-white">{card.value}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Pipeline Kanban */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 h-44">
+                  <p className="text-xs text-white/40 mb-3 font-semibold">Pipeline Kanban</p>
+                  <div className="flex gap-2 h-28">
+                    {[
+                      { name: 'Novo', count: 12, color: 'bg-blue-500/20' },
+                      { name: 'Qualificado', count: 8, color: 'bg-purple-500/20' },
+                      { name: 'Proposta', count: 5, color: 'bg-orange-500/20' },
+                      { name: 'Docs', count: 3, color: 'bg-cyan-500/20' },
+                      { name: 'Fechado', count: 15, color: 'bg-green-500/20' },
+                    ].map((col) => (
+                      <div key={col.name} className={`flex-1 ${col.color} border border-white/5 rounded-lg p-1.5`}>
+                        <p className="text-[9px] text-white/40 mb-1">{col.name}</p>
+                        <p className="text-xs font-bold text-white">{col.count}</p>
+                        {Array.from({ length: Math.min(col.count, 3) }).map((_, j) => (
+                          <div key={j} className="h-3 rounded bg-white/5 mb-1 mt-1" />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Grafico de producao */}
+                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 h-44">
+                  <p className="text-xs text-white/40 mb-3 font-semibold">Sua producao</p>
+                  <div className="flex items-end gap-1.5 h-28 pb-2">
+                    {[40, 65, 45, 80, 55, 90, 70, 85, 95, 60, 75, 100].map((h, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 bg-gradient-to-t from-[#D4AF37]/40 to-[#D4AF37]/10 rounded-t"
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* IA Insights bar */}
+              <div className="mt-4 flex items-center gap-3 p-3 bg-[#D4AF37]/[0.03] border border-[#D4AF37]/10 rounded-xl">
+                <Brain className="h-5 w-5 text-[#D4AF37] flex-shrink-0" />
+                <p className="text-xs text-white/60"><strong className="text-[#D4AF37]">IA Insight:</strong> Sua taxa de conversao subiu 12% esta semana. Continue priorizando leads de PME, seu ticket medio e 3x maior.</p>
+              </div>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent pointer-events-none" />
+          </motion.div>
+
+          <motion.div variants={fadeUp} custom={2} className="text-center mt-8">
+            <p className="text-sm sm:text-base text-white/40">CRM · Pipeline Kanban · Multicalculo · Financeiro · IA · Marketing. Tudo em um so lugar</p>
+          </motion.div>
+        </div>
+      </Section>
+
+      {/* ══════════════ MOCKUP FUNIL DE VENDAS ══════════════ */}
+      <Section className="bg-[#050505]">
+        <div className="max-w-5xl mx-auto px-4 md:px-8">
+          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Funil visual</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
+              Veja seu{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">funil de vendas</span>
+            </h2>
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              Visualize cada etapa do seu processo comercial. Do lead novo ao contrato fechado.
+            </p>
+          </motion.div>
+
+          <motion.div variants={scaleIn} className="relative">
+            <div className="space-y-2">
+              {[
+                { stage: 'Novos leads', count: 47, pct: 100, color: 'from-blue-500/40 to-blue-600/20' },
+                { stage: 'Qualificados', count: 32, pct: 68, color: 'from-purple-500/40 to-purple-600/20' },
+                { stage: 'Cotacao enviada', count: 23, pct: 49, color: 'from-orange-500/40 to-orange-600/20' },
+                { stage: 'Proposta', count: 15, pct: 32, color: 'from-yellow-500/40 to-yellow-600/20' },
+                { stage: 'Documentacao', count: 10, pct: 21, color: 'from-cyan-500/40 to-cyan-600/20' },
+                { stage: 'Fechado', count: 8, pct: 17, color: 'from-green-500/40 to-green-600/20' },
+              ].map((s, i) => (
+                <motion.div key={s.stage} variants={fadeUp} custom={i + 1} className="relative">
+                  <div
+                    className={`bg-gradient-to-r ${s.color} border border-white/5 rounded-xl p-4 transition-all`}
+                    style={{ width: `${Math.max(s.pct, 30)}%`, marginLeft: 'auto', marginRight: 'auto' }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-white">{s.stage}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg font-black text-white">{s.count}</span>
+                        <span className="text-[10px] text-white/50">{s.pct}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </Section>
+
+      {/* ══════════════ OPORTUNIDADES ══════════════ */}
+      <Section className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
+        <div className="max-w-6xl mx-auto px-4 md:px-8">
+          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Sua oportunidade</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-5">
+              Ganhe dinheiro{' '}
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">com liberdade</span>
+            </h2>
+            <p className="text-lg md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed">
+              O mercado de planos de saude e seguros cresce a cada ano. Com a Humano Saude,
+              voce tem tudo o que precisa para transformar essa oportunidade em renda real.
+            </p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            {OPORTUNIDADES.map((item, i) => {
+              const ItemIcon = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  variants={fadeUp}
+                  custom={i + 1}
+                  className="flex gap-5 bg-white/[0.02] border border-white/5 rounded-2xl p-6 lg:p-8 hover:border-[#D4AF37]/15 transition-all"
+                >
+                  <div className="h-14 w-14 rounded-2xl bg-[#D4AF37]/10 flex items-center justify-center flex-shrink-0">
+                    <ItemIcon className="h-7 w-7 text-[#D4AF37]" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl lg:text-2xl font-bold text-white mb-2">{item.title}</h3>
+                    <p className="text-base lg:text-lg text-white/50 leading-relaxed">{item.desc}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* CTA */}
-          <motion.div variants={fadeUp} custom={4} className="text-center mt-12">
+          <motion.div variants={fadeUp} custom={5} className="text-center mt-12">
             <Link
               href="/dashboard/corretor/cadastro"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#D4AF37] text-black font-bold text-sm tracking-wider hover:bg-[#F6E05E] transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#D4AF37] text-black font-bold text-base tracking-wider hover:bg-[#F6E05E] transition-all"
             >
-              COMEÇAR AGORA
+              Quero essa oportunidade
               <ArrowRight className="h-4 w-4" />
             </Link>
           </motion.div>
         </div>
       </Section>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  COMO FUNCIONA                                     */}
-      {/* ═══════════════════════════════════════════════════ */}
+      {/* ══════════════ Como funciona ══════════════ */}
       <Section className="bg-[#050505]">
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <span className="text-[#D4AF37] text-xs font-bold tracking-[4px] mb-4 block">PROCESSO SIMPLES</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black font-cinzel">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Processo simples</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel">
               Como{' '}
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">Funciona</span>
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">funciona</span>
             </h2>
           </motion.div>
 
@@ -499,8 +860,8 @@ export default function SejaCorretorPage() {
                       {item.step}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-white/50 leading-relaxed">{item.desc}</p>
+                  <h3 className="text-xl lg:text-2xl font-bold text-white mb-3">{item.title}</h3>
+                  <p className="text-base lg:text-lg text-white/50 leading-relaxed">{item.desc}</p>
                 </motion.div>
               );
             })}
@@ -508,137 +869,14 @@ export default function SejaCorretorPage() {
         </div>
       </Section>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  PLATAFORMA — Preview                              */}
-      {/* ═══════════════════════════════════════════════════ */}
-      <Section className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
-        <div className="max-w-6xl mx-auto px-4 md:px-8">
-          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <span className="text-[#D4AF37] text-xs font-bold tracking-[4px] mb-4 block">TECNOLOGIA</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black font-cinzel mb-4">
-              Sua{' '}
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">Plataforma</span>
-              {' '}Completa
-            </h2>
-            <p className="text-white/50 max-w-2xl mx-auto">
-              Um painel profissional, moderno e integrado para você gerenciar toda sua operação de vendas.
-            </p>
-          </motion.div>
-
-          <motion.div variants={scaleIn} className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a]">
-            {/* Mockup do painel */}
-            <div className="p-6 lg:p-10">
-              <div className="grid md:grid-cols-4 gap-4 mb-6">
-                {[
-                  { label: 'Leads Ativos', value: '47', icon: Users, color: 'text-blue-400' },
-                  { label: 'Propostas', value: '23', icon: Briefcase, color: 'text-green-400' },
-                  { label: 'Comissões', value: 'R$ 18.5K', icon: DollarSign, color: 'text-[#D4AF37]' },
-                  { label: 'Conversão', value: '68%', icon: TrendingUp, color: 'text-purple-400' },
-                ].map((card) => {
-                  const CardIcon = card.icon;
-                  return (
-                    <div key={card.label} className="bg-white/[0.03] border border-white/5 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CardIcon className={`h-4 w-4 ${card.color}`} />
-                        <span className="text-xs text-white/40">{card.label}</span>
-                      </div>
-                      <p className="text-2xl font-bold text-white">{card.value}</p>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-5 h-48">
-                  <p className="text-xs text-white/40 mb-3 font-semibold">PIPELINE KANBAN</p>
-                  <div className="flex gap-3 h-32">
-                    {['Novo', 'Cotação', 'Proposta', 'Fechado'].map((stage, i) => (
-                      <div key={stage} className="flex-1 bg-white/[0.02] border border-white/5 rounded-lg p-2">
-                        <p className="text-[10px] text-white/30 mb-2">{stage}</p>
-                        {Array.from({ length: 3 - i }).map((_, j) => (
-                          <div key={j} className="h-4 rounded bg-white/5 mb-1.5" />
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-5 h-48">
-                  <p className="text-xs text-white/40 mb-3 font-semibold">PRODUÇÃO MENSAL</p>
-                  <div className="flex items-end gap-2 h-32 pb-2">
-                    {[40, 65, 45, 80, 55, 90, 70, 85, 95, 60, 75, 100].map((h, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 bg-gradient-to-t from-[#D4AF37]/40 to-[#D4AF37]/10 rounded-t"
-                        style={{ height: `${h}%` }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Gradiente overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent pointer-events-none" />
-          </motion.div>
-
-          <motion.div variants={fadeUp} custom={2} className="text-center mt-8">
-            <p className="text-sm text-white/40">CRM · Pipeline · Cotações · Financeiro · Materiais · Ranking — tudo em um só lugar</p>
-          </motion.div>
-        </div>
-      </Section>
-
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  DEPOIMENTOS                                       */}
-      {/* ═══════════════════════════════════════════════════ */}
-      <Section className="bg-[#050505]">
-        <div className="max-w-5xl mx-auto px-4 md:px-8">
-          <motion.div variants={fadeUp} custom={0} className="text-center mb-16">
-            <span className="text-[#D4AF37] text-xs font-bold tracking-[4px] mb-4 block">DEPOIMENTOS</span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black font-cinzel">
-              Quem Já{' '}
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">Faz Parte</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {DEPOIMENTOS.map((d, i) => (
-              <motion.div
-                key={d.nome}
-                variants={fadeUp}
-                custom={i + 1}
-                className="bg-white/[0.02] border border-white/5 rounded-2xl p-6"
-              >
-                <div className="flex gap-1 mb-4">
-                  {Array.from({ length: d.estrelas }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 text-[#D4AF37] fill-[#D4AF37]" />
-                  ))}
-                </div>
-                <p className="text-sm text-white/70 leading-relaxed mb-6 italic">&ldquo;{d.texto}&rdquo;</p>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-[#D4AF37]/10 flex items-center justify-center text-[#D4AF37] font-bold text-sm">
-                    {d.nome.split(' ').map((w) => w[0]).join('')}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{d.nome}</p>
-                    <p className="text-xs text-white/40">{d.cargo}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  FAQ                                               */}
-      {/* ═══════════════════════════════════════════════════ */}
-      <Section id="faq" className="bg-gradient-to-b from-[#050505] to-[#0a0a0a]">
+      {/* ══════════════ FAQ ══════════════ */}
+      <Section id="faq" className="bg-gradient-to-b from-[#050505] via-[#0a0804] to-[#050505]">
         <div className="max-w-3xl mx-auto px-4 md:px-8">
           <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
-            <span className="text-[#D4AF37] text-xs font-bold tracking-[4px] mb-4 block">DÚVIDAS</span>
-            <h2 className="text-3xl md:text-4xl font-black font-cinzel">
+            <span className="text-[#D4AF37] text-sm font-bold tracking-[4px] mb-4 block">Duvidas</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-cinzel">
               Perguntas{' '}
-              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">Frequentes</span>
+              <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">frequentes</span>
             </h2>
           </motion.div>
 
@@ -650,9 +888,7 @@ export default function SejaCorretorPage() {
         </div>
       </Section>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  CTA FINAL                                         */}
-      {/* ═══════════════════════════════════════════════════ */}
+      {/* ══════════════ CTA FINAL ══════════════ */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 via-[#050505] to-[#D4AF37]/5" />
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent" />
@@ -665,59 +901,57 @@ export default function SejaCorretorPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Gift className="h-12 w-12 text-[#D4AF37] mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black font-cinzel mb-4">
+            <Sparkles className="h-12 w-12 text-[#D4AF37] mx-auto mb-6" />
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black font-cinzel mb-4">
               Pronto para{' '}
               <span className="bg-gradient-to-r from-[#D4AF37] to-[#F6E05E] bg-clip-text text-transparent">
-                Crescer?
+                Comecar?
               </span>
             </h2>
-            <p className="text-white/50 text-lg mb-8 max-w-xl mx-auto">
-              Junte-se à rede de corretores que mais cresce no Brasil.
-              Vagas limitadas para sua região.
+            <p className="text-white/50 text-lg md:text-xl lg:text-2xl mb-8 max-w-xl mx-auto leading-relaxed">
+              Cadastre-se gratuitamente, receba acesso a plataforma completa
+              e comece a construir sua renda no mercado de saude e seguros.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/dashboard/corretor/cadastro"
-                className="group flex items-center gap-2 px-10 py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#aa771c] text-black font-black text-sm tracking-widest hover:shadow-[0_0_60px_rgba(212,175,55,0.4)] transition-all"
+                className="group flex items-center gap-2 px-10 py-4 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#aa771c] text-black font-black text-base tracking-widest hover:shadow-[0_0_60px_rgba(212,175,55,0.4)] transition-all"
               >
-                SOLICITAR MINHA VAGA
+                Quero fazer parte
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a
-                href="https://wa.me/5521988179407?text=Olá! Tenho interesse em ser corretor Humano Saúde."
+                href="https://wa.me/5521988179407?text=Ola! Tenho interesse em ser corretor Humano Saude."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-[#D4AF37]/30 text-[#D4AF37] text-sm font-bold hover:bg-[#D4AF37]/5 transition-all"
+                className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-[#D4AF37]/30 text-[#D4AF37] text-base font-bold hover:bg-[#D4AF37]/5 transition-all"
               >
                 <Phone className="h-4 w-4" />
-                FALAR COM COMERCIAL
+                Falar com comercial
               </a>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════ */}
-      {/*  FOOTER                                            */}
-      {/* ═══════════════════════════════════════════════════ */}
+      {/* ══════════════ FOOTER ══════════════ */}
       <footer className="bg-black border-t border-white/5 py-12">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <Image
                 src="/images/logos/LOGO 1 SEM FUNDO.png"
-                alt="Humano Saúde"
+                alt="Humano Saude"
                 width={140}
                 height={47}
                 className="h-10 w-auto"
               />
               <div className="h-6 w-px bg-white/10" />
-              <span className="text-xs text-white/30">Programa de Corretores 2026</span>
+              <span className="text-sm text-white/30">Programa de corretores 2026</span>
             </div>
 
-            <div className="flex items-center gap-6 text-xs text-white/40">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-sm text-white/40">
               <a href="mailto:comercial@humanosaude.com.br" className="hover:text-[#D4AF37] transition-colors flex items-center gap-1">
                 <Mail className="h-3.5 w-3.5" /> comercial@humanosaude.com.br
               </a>
@@ -728,8 +962,8 @@ export default function SejaCorretorPage() {
           </div>
 
           <div className="mt-8 pt-6 border-t border-white/5 text-center">
-            <p className="text-[11px] text-white/20">
-              © {new Date().getFullYear()} Humano Saúde — Todos os direitos reservados. CNPJ: XX.XXX.XXX/0001-XX
+            <p className="text-sm text-white/20">
+              &copy; {new Date().getFullYear()} Humano Saude. Todos os direitos reservados. CNPJ: 50.216.907/0001-60 | SUSEP: 251174847
             </p>
           </div>
         </div>

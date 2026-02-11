@@ -756,48 +756,48 @@ export async function enviarEmailConviteCorretor(dados: {
     const content = `
       <div style="text-align:center;margin-bottom:24px;">
         <div style="display:inline-block;background-color:#D4AF37;color:#000;width:56px;height:56px;border-radius:14px;line-height:56px;font-size:24px;">
-          🤝
+          HS
         </div>
       </div>
       
-      <h2 style="color:#111;font-size:22px;font-weight:800;margin:0 0 8px;text-align:center;">
+      <h2 style="color:#111;font-size:26px;font-weight:800;margin:0 0 8px;text-align:center;">
         Você foi convidado!
       </h2>
       
-      <p style="color:#6B7280;font-size:14px;line-height:1.6;text-align:center;margin:0 0 24px;">
+      <p style="color:#6B7280;font-size:16px;line-height:1.7;text-align:center;margin:0 0 24px;">
         <strong style="color:#111;">${dados.nomeConvidante}</strong> acredita no seu potencial e te convidou para fazer parte 
         da <strong style="color:#D4AF37;">rede de corretores da Humano Saúde</strong>.
       </p>
       
       <div style="background-color:#F9FAFB;border-radius:12px;padding:20px;margin-bottom:24px;">
-        <p style="color:#374151;font-size:14px;font-weight:700;margin:0 0 12px;">Por que ser um corretor Humano Saúde?</p>
+        <p style="color:#374151;font-size:16px;font-weight:700;margin:0 0 12px;">Por que ser um corretor Humano Saúde?</p>
         <table cellpadding="0" cellspacing="0" border="0" width="100%">
           <tr>
-            <td style="padding:6px 0;color:#6B7280;font-size:13px;">✅ Comissões até 300% acima do mercado</td>
+            <td style="padding:6px 0;color:#6B7280;font-size:15px;">✅ Comissões competitivas acima do mercado</td>
           </tr>
           <tr>
-            <td style="padding:6px 0;color:#6B7280;font-size:13px;">✅ Plataforma completa com CRM e Pipeline</td>
+            <td style="padding:6px 0;color:#6B7280;font-size:15px;">✅ Plataforma completa com CRM e Pipeline</td>
           </tr>
           <tr>
-            <td style="padding:6px 0;color:#6B7280;font-size:13px;">✅ Leads qualificados direto no seu painel</td>
+            <td style="padding:6px 0;color:#6B7280;font-size:15px;">✅ Leads qualificados direto no seu painel</td>
           </tr>
           <tr>
-            <td style="padding:6px 0;color:#6B7280;font-size:13px;">✅ Suporte pós-venda dedicado</td>
+            <td style="padding:6px 0;color:#6B7280;font-size:15px;">✅ Suporte pós-venda dedicado</td>
           </tr>
           <tr>
-            <td style="padding:6px 0;color:#6B7280;font-size:13px;">✅ Treinamento contínuo e materiais exclusivos</td>
+            <td style="padding:6px 0;color:#6B7280;font-size:15px;">✅ Treinamento contínuo e materiais exclusivos</td>
           </tr>
         </table>
       </div>
       
       <div style="text-align:center;margin-bottom:16px;">
         <a href="${BASE_URL}/seja-corretor" 
-           style="display:inline-block;background-color:#D4AF37;color:#000000;padding:14px 36px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;">
+           style="display:inline-block;background-color:#D4AF37;color:#FFFFFF;padding:16px 40px;border-radius:12px;font-size:16px;font-weight:700;text-decoration:none;">
           Conheça o Programa →
         </a>
       </div>
       
-      <p style="color:#9CA3AF;font-size:12px;text-align:center;margin:0;">
+      <p style="color:#9CA3AF;font-size:14px;text-align:center;margin:0;">
         Acesse e cadastre-se. É rápido, gratuito e sem burocracia.
       </p>
     `;
@@ -805,7 +805,7 @@ export async function enviarEmailConviteCorretor(dados: {
     const { data, error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to: [dados.emailConvidado],
-      subject: `${dados.nomeConvidante} te convidou para ser Corretor Humano Saude`,
+      subject: 'Humano Saude te convidou para ser Especialista em Seguros',
       html: emailLayout(content, false),
     });
 

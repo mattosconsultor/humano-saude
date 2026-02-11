@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { enviarEmailConviteCorretor } from '@/lib/email';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 // ─── POST: Enviar convite para ser corretor ─────────────────
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, nomeConvidante } = body;
+    const { email, nomeConvidante, origem, idConvidante } = body;
 
     if (!email || !nomeConvidante) {
       return NextResponse.json(
@@ -33,6 +39,19 @@ export async function POST(request: NextRequest) {
         { error: result.error || 'Erro ao enviar convite' },
         { status: 500 }
       );
+    }
+
+    // Salvar convite no banco
+    try {
+      await supabase.from('convites_corretor').insert({
+        email_convidado: email.toLowerCase(),
+        nome_convidante: nomeConvidante,
+        origem: origem || 'admin',
+        id_convidante: idConvidante || null,
+        status: 'enviado',
+      });
+    } catch (dbErr) {
+      console.warn('[convite] Não foi possível salvar no banco:', dbErr);
     }
 
     return NextResponse.json({

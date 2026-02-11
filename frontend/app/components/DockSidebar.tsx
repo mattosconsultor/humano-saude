@@ -66,6 +66,7 @@ import {
   UserPlus,
   Loader2,
   CheckCircle,
+  Briefcase,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -224,10 +225,14 @@ const sidebarItems: SidebarItem[] = [
   {
     id: "corretores",
     label: "Corretores",
-    icon: Shield,
+    icon: Briefcase,
     href: `${P}/corretores`,
     color: "gold",
     badge: { text: "NOVO", variant: "gold" as BadgeVariant },
+    children: [
+      { id: "corretores-lista", label: "Solicitações", icon: UserPlus, href: `${P}/corretores` },
+      { id: "corretores-convites", label: "Convites enviados", icon: Send, href: `${P}/corretores/convites` },
+    ],
   },
 
   // ── GESTÃO & CLIENTES ──
