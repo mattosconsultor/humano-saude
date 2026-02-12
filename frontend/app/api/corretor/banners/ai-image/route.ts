@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY || '');
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, operadora, plano, modalidade, angulo, template, ratio, refinementPrompt, previousImageBase64 } = await req.json();
+    const { imageBase64, operadora, plano, modalidade, angulo, template, ratio, refinementPrompt, previousImageBase64, attachmentBase64 } = await req.json();
 
     if (!imageBase64) {
       return NextResponse.json({ error: 'Imagem obrigatória' }, { status: 400 });
@@ -53,11 +53,14 @@ Gere uma imagem de anúncio profissional para Instagram ${isStories ? 'Stories (
 IMPORTANTE: Gere a imagem no formato ${isStories ? 'vertical (portrait 9:16)' : 'portrait (4:5)'} adequado para ${isStories ? 'Instagram Stories' : 'Instagram Feed'}.`;
 
         /* ── Prompt de refinamento (ajustar imagem existente) ── */
+        const hasAttachment = !!(isRefinement && attachmentBase64);
         const refinePrompt = `Você é um designer sênior de anúncios para Instagram no segmento de planos de saúde do Brasil.
 
 Eu já gerei esta imagem de anúncio (a segunda imagem anexada). Agora preciso que você faça os seguintes AJUSTES nela:
 
 "${refinementPrompt}"
+
+${hasAttachment ? `IMPORTANTE: O usuário anexou uma imagem adicional (a terceira imagem). Use essa imagem conforme a instrução acima — pode ser uma logo, foto, ícone ou outro elemento visual que deve ser INCORPORADO no banner. Integre-a de forma profissional no design.` : ''}
 
 Contexto do banner:
 - Operadora: ${operadora || 'genérica'}
@@ -71,6 +74,7 @@ REGRAS CRÍTICAS:
 4. Mantenha o formato ${isStories ? 'vertical (portrait 9:16)' : 'portrait (4:5)'}
 5. Mantenha a qualidade profissional para Meta Ads
 6. Se o pedido envolver texto, mantenha tipografia impactante e legível
+${hasAttachment ? '7. Integre a imagem anexada (terceira imagem) conforme solicitado pelo usuário' : ''}
 
 Gere a imagem ajustada agora.`;
 
@@ -96,7 +100,21 @@ Gere a imagem ajustada agora.`;
               data: prevBase64,
             },
           });
-          contentParts.push({ text: `Ajuste solicitado: "${refinementPrompt}". Aplique na segunda imagem (o banner gerado) mantendo a estrutura.` });
+
+          /* Se tem anexo (logo, foto, etc.), enviar como terceira imagem */
+          if (attachmentBase64) {
+            const attachMatch = attachmentBase64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+            if (attachMatch) {
+              contentParts.push({
+                inlineData: {
+                  mimeType: attachMatch[1],
+                  data: attachMatch[2],
+                },
+              });
+            }
+          }
+
+          contentParts.push({ text: `Ajuste solicitado: "${refinementPrompt}".${attachmentBase64 ? ' Use a terceira imagem anexada conforme a instrução.' : ''} Aplique na segunda imagem (o banner gerado) mantendo a estrutura.` });
         }
 
         console.log(`[AI Image] ${isRefinement ? 'Refinando' : 'Gerando'} com modelo: ${modelName}`);

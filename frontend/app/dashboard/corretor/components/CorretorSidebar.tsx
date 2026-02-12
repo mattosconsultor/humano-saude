@@ -109,6 +109,7 @@ const menuItems: SidebarItem[] = [
       { id: 'mat-vendas', label: 'Material de Vendas', icon: FolderOpen, href: `${B}/materiais` },
       { id: 'mat-banners', label: 'CriativoPRO', icon: Palette, href: `${B}/materiais/banners`, badge: { text: 'PRO', variant: 'gold' } },
       { id: 'mat-iaclone', label: 'IA Clone', icon: Wand2, href: `${B}/materiais/ia-clone`, badge: { text: 'NOVO', variant: 'gold' } },
+      { id: 'mat-galeria', label: 'Galeria Salvas', icon: Image, href: `${B}/materiais/galeria` },
       { id: 'mat-upload', label: 'Meus Uploads', icon: Upload, href: `${B}/materiais/uploads` },
     ],
   },

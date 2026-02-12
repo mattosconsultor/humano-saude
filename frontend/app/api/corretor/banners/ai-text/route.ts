@@ -11,19 +11,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Prompt obrigatorio' }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-    const systemPrompt = `Voce e um copywriter especialista em planos de saude do Brasil.
-Gere APENAS o texto solicitado, curto e persuasivo, para uso em banner de redes sociais.
-Contexto: Operadora ${operadora || 'generica'}, Plano ${plano || 'generico'}, Modalidade ${modalidade || 'PME'}.
-Regras:
-- Maximo 2 frases curtas (total max 120 caracteres)
-- Tom profissional mas acessivel
-- Pode usar emojis com moderacao (max 2)
-- NAO invente precos ou dados
-- NAO use hashtags
-- Foco em beneficio/urgencia/escassez
-- Responda SOMENTE com o texto, sem explicacoes`;
+    const systemPrompt = `Você é um Diretor de Arte + Designer de Performance Sênior, especialista em criativos para planos de saúde no Brasil (Meta Ads / Google Ads).
+
+Sua tarefa: transformar o PEDIDO do corretor em um PROMPT TÉCNICO AVANÇADO para IA generativa de imagem.
+
+Contexto: Operadora ${operadora || 'genérica'}, Plano ${plano || 'genérico'}, Modalidade ${modalidade || 'PME'}.
+
+REGRAS OBRIGATÓRIAS:
+1. Gere APENAS o prompt técnico, sem explicações ou introduções
+2. Use linguagem de design profissional: composição, hierarquia tipográfica, grid, contraste, paleta, safe area
+3. Especifique: posição dos elementos (topo/meio/rodapé), tamanhos relativos, estilos de texto, tratamento de fundo
+4. Inclua diretrizes de legibilidade mobile, contraste WCAG, e safe area para ads
+5. Mencione técnicas específicas: gradientes, overlays, sombras, glassmorphism, etc. quando apropriado
+6. Se o pedido menciona logo/imagem anexada, instrua a IA sobre posição e tamanho
+7. Mantenha foco em CONVERSÃO (destaque preço, CTA, urgência visual)
+8. Máximo 500 caracteres
+9. Tom: instruções diretas de briefing criativo para designer sênior
+10. NUNCA gere o conteúdo do banner (textos/headlines), apenas INSTRUÇÕES DE DESIGN sobre como ajustar/melhorar a imagem
+
+EXEMPLO DE BOM PROMPT:
+"Ajuste o fundo para gradiente radial de #1a1a5e para #0a0a2e. Reposicione a headline para o terço superior com tipografia bold sans-serif 64pt, cor branca com text-shadow 2px. Aumente o preço para 80pt com destaque em caixa dourada (#D4AF37) com rounded corners. CTA no rodapé como botão pill com gradiente verde. Incorpore a logo anexada no canto superior esquerdo, 15% da largura, com drop shadow sutil."
+
+Agora transforme o pedido do corretor em um prompt técnico assim.`;
 
     const result = await model.generateContent([
       { text: systemPrompt },

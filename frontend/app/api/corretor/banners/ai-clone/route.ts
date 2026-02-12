@@ -14,7 +14,8 @@ Analise a imagem do anúncio enviada e extraia as seguintes informações em for
   "cta": "O call-to-action (botão/frase de ação)",
   "cores": ["#hex1", "#hex2", "#hex3"] (até 4 cores dominantes detectadas em formato hex),
   "dicas": ["dica1", "dica2", "dica3"] (3 a 5 sugestões de melhoria para o anúncio),
-  "layout": "Descrição curta do layout: posição dos elementos, se tem foto, se é minimalista, etc."
+  "layout": "Descrição detalhada do layout: posição dos elementos, tipo de fundo, se tem foto, se é minimalista, disposição de logos, seções, etc.",
+  "prompt_sugerido": "Prompt técnico e detalhado para gerar uma versão melhorada deste anúncio com IA generativa de imagem. Descreva composição, cores, tipografia, posição dos elementos, estilo visual. Máximo 3 frases."
 }
 
 Regras:
@@ -22,47 +23,15 @@ Regras:
 - Se não conseguir detectar algum campo, use string vazia
 - Cores devem ser hex válidas
 - Dicas devem ser específicas e acionáveis
-- Layout deve descrever a composição visual em 1-2 frases`;
-
-const GENERATE_SYSTEM = `Você é um designer gráfico e copywriter de elite especialista em anúncios de planos de saúde do Brasil.
-Sua tarefa é gerar o código HTML+CSS inline de um anúncio (stories 1080x1920) que CLONE o estilo visual do anúncio original mas com DADOS PERSONALIZADOS do corretor.
-
-ANÁLISE DO ORIGINAL:
-{{ANALYSIS}}
-
-DADOS DO CORRETOR:
-- Operadora: {{OPERADORA}}
-- Plano: {{PLANO}}
-- Preço: {{PRECO}}
-- Nome: {{NOME}}
-- WhatsApp: {{WHATSAPP}}
-
-{{INSTRUCAO_EXTRA}}
-
-Regras CRÍTICAS:
-1. Gere SOMENTE o HTML (uma única div raiz). Sem <!DOCTYPE>, sem <html>, sem <head>, sem <body>, sem markdown.
-2. A div raiz DEVE ter style="width:1080px;height:1920px;position:relative;overflow:hidden;"
-3. Use SOMENTE CSS inline nos elementos. Sem <style>, sem classes.
-4. Clone o ESTILO do original (cores, layout, composição) mas use os dados personalizados
-5. Se o original tem gradientes, use gradientes similares
-6. Texto do headline deve ser grande e impactante (min 80px)
-7. O preço deve ser MUITO destacado (min 120px bold)
-8. Inclua o CTA (botão ou frase de ação) bem visível
-9. Se tiver nome do corretor e WhatsApp, inclua no rodapé
-10. Use fontes sans-serif (system-ui, sans-serif)
-11. As cores devem seguir a paleta detectada no original, adaptadas à operadora
-12. NÃO use imagens externas (sem <img src>), use apenas CSS para efeitos visuais
-13. NÃO use tags <script>
-14. Garanta contraste legível (texto claro em fundo escuro ou vice-versa)
-15. O resultado deve parecer PROFISSIONAL e pronto para postar
-16. Responda SOMENTE com o HTML, sem explicações, sem backticks`;
+- Layout deve descrever a composição visual em 2-3 frases detalhadas
+- O prompt_sugerido deve ser um prompt técnico que um designer usaria para recriar o anúncio com melhorias`;
 
 /* ═══════════ HANDLER ═══════════ */
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { action, imageBase64, operadora, plano, preco, nomeCorretor, whatsapp, instrucao, analysis } = body;
+    const { action, imageBase64, operadora, plano, preco, nomeCorretor, whatsapp, instrucao, analysis, refinementPrompt, attachmentBase64, ratio } = body;
 
     if (!imageBase64) {
       return NextResponse.json({ error: 'Imagem obrigatória' }, { status: 400 });
@@ -72,20 +41,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'GOOGLE_AI_API_KEY não configurada no servidor' }, { status: 500 });
     }
 
-    // Modelos em ordem de preferência (melhor qualidade primeiro, fallback segundo)
-    const TEXT_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
-
-    /* ── ANALYZE ── */
+    /* ══════════════════════════════ ANALYZE ══════════════════════════════ */
     if (action === 'analyze') {
-      // Extract base64 data and MIME type — flexible regex
       const match = imageBase64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
       if (!match) {
-        console.error('[AI Clone] Invalid base64 format. Starts with:', imageBase64.slice(0, 50));
         return NextResponse.json({ error: 'Formato de imagem inválido. Envie JPG, PNG ou WebP.' }, { status: 400 });
       }
       const [, mimeType, base64Data] = match;
 
-      // Check size (Gemini limit ~20MB inline)
       const sizeBytes = base64Data.length * 0.75;
       if (sizeBytes > 15 * 1024 * 1024) {
         return NextResponse.json({ error: 'Imagem muito grande para análise. Máximo ~15MB.' }, { status: 400 });
@@ -93,6 +56,7 @@ export async function POST(req: NextRequest) {
 
       console.log(`[AI Clone] Analyzing image: ${mimeType}, ~${Math.round(sizeBytes / 1024)}KB`);
 
+      const TEXT_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
       let result;
       for (const modelName of TEXT_MODELS) {
         try {
@@ -100,40 +64,29 @@ export async function POST(req: NextRequest) {
           const model = genAI.getGenerativeModel({ model: modelName });
           result = await model.generateContent([
             { text: ANALYZE_SYSTEM },
-            {
-              inlineData: {
-                mimeType: mimeType,
-                data: base64Data,
-              },
-            },
+            { inlineData: { mimeType, data: base64Data } },
             { text: `Operadora do corretor: ${operadora || 'Amil'}. Plano: ${plano || 'não especificado'}.${instrucao ? ` Instrução adicional: ${instrucao}` : ''}` },
           ]);
           console.log(`[AI Clone] Análise OK com modelo: ${modelName}`);
           break;
         } catch (modelErr) {
-          console.warn(`[AI Clone] Modelo ${modelName} falhou na análise:`, modelErr instanceof Error ? modelErr.message : modelErr);
+          console.warn(`[AI Clone] Modelo ${modelName} falhou:`, modelErr instanceof Error ? modelErr.message : modelErr);
           if (modelName === TEXT_MODELS[TEXT_MODELS.length - 1]) throw modelErr;
         }
       }
 
       const rawText = result!.response.text().trim();
-      // Try to parse JSON from response (may have markdown wrappers)
       let parsed;
       try {
         const jsonMatch = rawText.match(/\{[\s\S]*\}/);
         parsed = JSON.parse(jsonMatch?.[0] || rawText);
       } catch {
         parsed = {
-          headline: '',
-          mensagem: rawText.slice(0, 200),
-          cta: '',
-          cores: [],
-          dicas: ['Não foi possível analisar completamente o anúncio'],
-          layout: 'Não detectado',
+          headline: '', mensagem: rawText.slice(0, 200), cta: '',
+          cores: [], dicas: ['Não foi possível analisar completamente'], layout: 'Não detectado', prompt_sugerido: '',
         };
       }
 
-      // Normalize cores
       if (!Array.isArray(parsed.cores)) parsed.cores = [];
       if (!Array.isArray(parsed.dicas)) parsed.dicas = [];
 
@@ -146,11 +99,12 @@ export async function POST(req: NextRequest) {
           cores: parsed.cores.slice(0, 5),
           dicas: parsed.dicas.slice(0, 5),
           layout: parsed.layout || '',
+          prompt_sugerido: parsed.prompt_sugerido || '',
         },
       });
     }
 
-    /* ── GENERATE ── */
+    /* ══════════════════════════════ GENERATE (IMAGE) ══════════════════════════════ */
     if (action === 'generate') {
       if (!analysis) {
         return NextResponse.json({ error: 'Análise obrigatória para gerar' }, { status: 400 });
@@ -162,55 +116,116 @@ export async function POST(req: NextRequest) {
       }
       const [, mimeType, base64Data] = match;
 
-      // Build prompt from template
-      const opNome = operadora
-        ? (['amil','sulamerica','bradesco','porto','assim','levesaude','unimed','preventsenior','medsenior']
-            .includes(operadora) ? ({ amil:'Amil', sulamerica:'SulAmérica', bradesco:'Bradesco Saúde', porto:'Porto Saúde', assim:'Assim Saúde', levesaude:'Leve Saúde', unimed:'Unimed', preventsenior:'Prevent Senior', medsenior:'MedSenior' } as Record<string,string>)[operadora] : operadora)
-        : 'Amil';
+      const opMap: Record<string, string> = {
+        amil: 'Amil', sulamerica: 'SulAmérica', bradesco: 'Bradesco Saúde',
+        porto: 'Porto Saúde', assim: 'Assim Saúde', levesaude: 'Leve Saúde',
+        unimed: 'Unimed', preventsenior: 'Prevent Senior', medsenior: 'MedSenior',
+      };
+      const opNome = opMap[operadora] || operadora || 'Amil';
 
-      const prompt = GENERATE_SYSTEM
-        .replace('{{ANALYSIS}}', JSON.stringify(analysis, null, 2))
-        .replace('{{OPERADORA}}', opNome || 'Amil')
-        .replace('{{PLANO}}', plano || 'Plano Saúde')
-        .replace('{{PRECO}}', preco || 'Consulte')
-        .replace('{{NOME}}', nomeCorretor || '')
-        .replace('{{WHATSAPP}}', whatsapp || '')
-        .replace('{{INSTRUCAO_EXTRA}}', instrucao ? `INSTRUÇÃO EXTRA DO CORRETOR: ${instrucao}` : '');
+      const userPrompt = refinementPrompt?.trim() || '';
+      const selectedRatio = ratio || '9:16';
+      const isStories = selectedRatio === '9:16';
+      const formatLabel = isStories ? 'Stories vertical (9:16, 1080×1920px)' : 'Feed quadrado (4:5, 1080×1350px)';
 
-      let genResult;
-      for (const modelName of TEXT_MODELS) {
-        try {
-          console.log(`[AI Clone] Gerando HTML com modelo: ${modelName}`);
-          const model = genAI.getGenerativeModel({ model: modelName });
-          genResult = await model.generateContent([
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType: mimeType,
-                data: base64Data,
-              },
-            },
-            { text: 'Gere o HTML do anúncio clonado e personalizado agora. Responda SOMENTE com o HTML.' },
-          ]);
-          console.log(`[AI Clone] Geração OK com modelo: ${modelName}`);
-          break;
-        } catch (modelErr) {
-          console.warn(`[AI Clone] Modelo ${modelName} falhou na geração:`, modelErr instanceof Error ? modelErr.message : modelErr);
-          if (modelName === TEXT_MODELS[TEXT_MODELS.length - 1]) throw modelErr;
+      const prompt = `Você é um Diretor de Arte + Designer de Performance Sênior, especialista em criativos para planos de saúde no Brasil.
+Seu objetivo é criar um banner pronto para tráfego pago (Meta Ads), com alta clareza, contraste, leitura mobile e foco em conversão.
+
+${userPrompt ? `INSTRUÇÃO PRINCIPAL DO CORRETOR:\n"${userPrompt}"` : 'Crie uma versão MELHORADA e PROFISSIONAL deste anúncio.'}
+
+ANÁLISE DO ANÚNCIO ORIGINAL:
+- Headline: ${analysis.headline || 'não detectada'}
+- Mensagem: ${analysis.mensagem || 'não detectada'}
+- CTA: ${analysis.cta || 'não detectado'}
+- Layout: ${analysis.layout || 'não detectado'}
+- Cores dominantes: ${(analysis.cores || []).join(', ') || 'não detectadas'}
+
+DADOS OBRIGATÓRIOS DO CORRETOR (incorporar no banner):
+- Operadora: ${opNome}
+- Plano: ${plano || 'Plano de Saúde'}
+- Preço: ${preco || 'Consulte valores'}
+${nomeCorretor ? `- Corretor: ${nomeCorretor}` : ''}
+${whatsapp ? `- WhatsApp: ${whatsapp}` : ''}
+
+${instrucao ? `INSTRUÇÃO EXTRA: ${instrucao}` : ''}
+${attachmentBase64 ? 'IMPORTANTE: O usuário anexou uma imagem adicional (a terceira imagem). Incorpore-a no banner como logo, selo, foto ou ícone conforme contexto.' : ''}
+
+FORMATO OBRIGATÓRIO: ${formatLabel}
+A imagem DEVE ter exatamente a proporção ${isStories ? '9:16 (vertical/portrait)' : '4:5 (quase quadrado, ligeiramente vertical)'}.
+${isStories ? 'Largura 1080px, altura 1920px. Orientação RETRATO (mais alto que largo).' : 'Largura 1080px, altura 1350px. Quase quadrado mas ligeiramente mais alto.'}
+
+REGRAS DE DESIGN:
+1. RESPEITE O FORMATO ${isStories ? '9:16 VERTICAL' : '4:5 FEED'} — NÃO gere landscape/horizontal
+2. Design premium, profissional, pronto para Meta Ads
+3. Mantenha o ESTILO VISUAL do original (cores, composição, identidade)
+4. Headline grande, impactante, legível em mobile (min 48pt equivalente)
+5. Preço BEM destacado (tamanho grande, cor contrastante, destaque visual)
+6. CTA claro e chamativo (botão ou faixa)
+7. Tipografia moderna sans-serif, alto contraste
+8. Textos SEMPRE legíveis sobre o fundo (usar sombra, overlay ou caixa)
+9. Hierarquia visual: Headline → Preço/Benefício → CTA → Dados de contato
+10. Safe area: nada importante nos cantos (10% de margem)
+${nomeCorretor || whatsapp ? '11. Nome/WhatsApp no rodapé com tamanho menor' : ''}
+
+Gere a imagem agora no formato ${isStories ? '9:16 VERTICAL' : '4:5 FEED'}.`;
+
+      const contentParts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [
+        { text: prompt },
+        { inlineData: { mimeType, data: base64Data } },
+      ];
+
+      if (attachmentBase64) {
+        const attachMatch = attachmentBase64.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+        if (attachMatch) {
+          contentParts.push({ inlineData: { mimeType: attachMatch[1], data: attachMatch[2] } });
         }
       }
 
-      let html = genResult!.response.text().trim();
+      const IMAGE_MODELS = ['gemini-2.5-flash-image', 'gemini-2.0-flash-exp-image-generation', 'gemini-3-pro-image-preview'];
 
-      // Remove markdown code block wrappers if present
-      html = html.replace(/^```html?\s*\n?/i, '').replace(/\n?```\s*$/i, '');
+      for (const modelName of IMAGE_MODELS) {
+        try {
+          console.log(`[AI Clone] Gerando imagem com modelo: ${modelName}`);
+          const model = genAI.getGenerativeModel({
+            model: modelName,
+            generationConfig: {
+              // @ts-expect-error — responseModalities is available for image generation models
+              responseModalities: ['TEXT', 'IMAGE'],
+            },
+          });
 
-      // Basic sanitization - remove script tags
-      html = html.replace(/<script[\s\S]*?<\/script>/gi, '');
-      html = html.replace(/on\w+="[^"]*"/gi, '');
-      html = html.replace(/on\w+='[^']*'/gi, '');
+          const genResult = await model.generateContent(contentParts);
+          const parts = genResult.response.candidates?.[0]?.content?.parts || [];
+          let generatedImageBase64: string | null = null;
+          let aiText = '';
 
-      return NextResponse.json({ success: true, html });
+          for (const part of parts) {
+            if (part.inlineData?.data) {
+              generatedImageBase64 = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+            }
+            if (part.text) {
+              aiText += part.text;
+            }
+          }
+
+          if (generatedImageBase64) {
+            console.log(`[AI Clone] Imagem gerada com sucesso: ${modelName}`);
+            return NextResponse.json({
+              success: true,
+              imageUrl: generatedImageBase64,
+              description: aiText || 'Imagem clonada gerada com IA',
+            });
+          }
+        } catch (modelErr) {
+          console.warn(`[AI Clone] Modelo ${modelName} falhou:`, modelErr instanceof Error ? modelErr.message : modelErr);
+          continue;
+        }
+      }
+
+      return NextResponse.json({
+        success: false,
+        error: 'A IA não conseguiu gerar a imagem clonada. Tente novamente.',
+      });
     }
 
     return NextResponse.json({ error: 'Action inválida (use: analyze ou generate)' }, { status: 400 });
